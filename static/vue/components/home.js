@@ -1,10 +1,44 @@
+import Administrationhome from "./administration_home.js";
+import Facultyhome from "./faculty_home.js";
+import Studenthome from "./student_home.js";
+
+
+
 const Home = Vue.component("home", {
-    template:  `<div class="container mt-5">
-                    <div class="alert alert-info" role="alert">
-                        <h4 class="alert-heading">Page is coming soon, stay tuned!</h4>
-                        <p>We're working on something awesome. Please check back later.</p>
-                    </div>
-                </div>`,
+    template:  
+    `
+    <div>
+        <div v-if="role === 'Administration'">
+            <Administrationhome></Administrationhome>
+        </div>
+        <div v-else-if="role === 'Faculty'">
+            <Facultyhome></Facultyhome>
+        </div>
+        <div v-else-if="role === 'Student'">
+            <Studenthome></Studenthome>
+        </div>
+    </div>
+
+    
+    
+    `,
+    data() {
+        return {
+            role: localStorage.getItem('role'),
+        };
+    },
+
+    components: {
+        Administrationhome,
+        Facultyhome,
+        Studenthome
+    },
+
+    mounted() {
+        document.title = "Home";
+    }
+
+
 });
 
 export default Home;

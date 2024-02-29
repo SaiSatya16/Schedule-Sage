@@ -24,6 +24,7 @@ class User(db.Model, UserMixin):
     image = db.Column(db.String(100))
     courses = db.relationship('Course', backref='student', lazy='dynamic')
     tasks = db.relationship('Tasks', backref='student_tasks', lazy='dynamic')
+    student_time_table = db.relationship('StudentTimeTable', backref='student_time_table', lazy='dynamic')
 
 
 
@@ -40,6 +41,7 @@ class Course(db.Model):
     image = db.Column(db.String)
     student_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     time_table = db.relationship('TimeTable', backref='course', lazy='dynamic')
+    faculty_name = db.Column(db.String, nullable=False)
     # assignments = db.relationship('Assignment', backref='course', lazy='dynamic')
 
 
@@ -50,6 +52,15 @@ class TimeTable(db.Model):
     start_time = db.Column(db.String, nullable=False)
     end_time = db.Column(db.String, nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
+    limit = db.Column(db.Integer, nullable=False)
+
+class StudentTimeTable(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    day = db.Column(db.String, nullable=False)
+    start_time = db.Column(db.String, nullable=False)
+    end_time = db.Column(db.String, nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 
 class Tasks(db.Model):

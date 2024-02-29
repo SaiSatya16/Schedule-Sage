@@ -62,7 +62,8 @@ course_fields = {
     'name': fields.String,
     'description': fields.String,
     'image': fields.String,
-    'student_id': fields.Integer
+    'student_id': fields.Integer,
+    'faculty_name': fields.String
 }
 
 timetable_fields = {
@@ -92,12 +93,14 @@ create_course_parser.add_argument('name')
 create_course_parser.add_argument('description')
 create_course_parser.add_argument('image')
 create_course_parser.add_argument('student_id')
+create_course_parser.add_argument('faculty_name')
 
 create_timetable_parser = reqparse.RequestParser()
 create_timetable_parser.add_argument('day')
 create_timetable_parser.add_argument('start_time')
 create_timetable_parser.add_argument('end_time')
 create_timetable_parser.add_argument('course_id')
+create_timetable_parser.add_argument('limit')
 
 create_tasks_parser = reqparse.RequestParser()
 create_tasks_parser.add_argument('name')
@@ -114,12 +117,14 @@ update_course_parser.add_argument('name')
 update_course_parser.add_argument('description')
 update_course_parser.add_argument('image')
 update_course_parser.add_argument('student_id')
+update_course_parser.add_argument('faculty_name')
 
 update_timetable_parser = reqparse.RequestParser()
 update_timetable_parser.add_argument('day')
 update_timetable_parser.add_argument('start_time')
 update_timetable_parser.add_argument('end_time')
 update_timetable_parser.add_argument('course_id')
+update_timetable_parser.add_argument('limit')
 
 
 update_tasks_parser = reqparse.RequestParser()
@@ -131,14 +136,14 @@ update_tasks_parser.add_argument('end_time')
 update_tasks_parser.add_argument('student_id')
 
 
-#==============================Course API========================================
+#==============================Faculty Course API========================================
 
-class CourseAPI(Resource):
-    def get(self):
+class FacultyCourseAPI(Resource):
+    def get(self,name):
         data = []
 
-        #query all courses order by id in descending order
-        courses = Course.query.order_by(Course.id.desc()).all()
+        #query all courses of faculty name order by id in descending order
+        courses = Course.query.filter_by(faculty_name=name).order_by(Course.id.desc()).all()
         if not courses:
             # Return an empty list if there are no courses
             return data
@@ -151,7 +156,9 @@ class CourseAPI(Resource):
                     "day": timetable.day,
                     "start_time": timetable.start_time,
                     "end_time": timetable.end_time,
-                    "course_id": timetable.course_id
+                    "course_id": timetable.course_id,
+                    "limit": timetable.limit,
+                    "course_name": course.name,
                 })
             
             
@@ -163,6 +170,7 @@ class CourseAPI(Resource):
                 "description": course.description,
                 "image": course.image,
                 "student_id": course.student_id,
+                "faculty_name": course.faculty_name,
                 "time_table": Time_table
             })
 
@@ -174,13 +182,14 @@ class CourseAPI(Resource):
         name = args.get('name', None)
         description = args.get('description', None)
         student_id = args.get('student_id', None)
+        faculty_name = args.get('faculty_name', None)
 
         if not name:
             raise BusinessValidationError(status_code=400,error_code="BE1001",error_message="Course name is required")
         if not description:
             raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Course description is required")
         
-        course = Course(name=name, description=description, student_id=student_id)
+        course = Course(name=name, description=description, student_id=student_id, faculty_name=faculty_name)
         db.session.add(course)
         db.session.commit()
         return course, 201
@@ -190,7 +199,8 @@ class CourseAPI(Resource):
         args = update_course_parser.parse_args()
         name = args.get('name', None)
         description = args.get('description', None)
-        student_id = args.get('student_id', None)
+        # student_id = args.get('student_id', None)
+        # faculty_name = args.get('faculty_name', None)
 
         course = Course.query.get(id)
 
@@ -201,8 +211,10 @@ class CourseAPI(Resource):
             course.name = name
         if description:
             course.description = description
-        if student_id:
-            course.student_id = student_id
+        # if student_id:
+        #     course.student_id = student_id
+        # if faculty_name:
+        #     course.faculty_name = faculty_name
         
         db.session.commit()
         return course, 200
@@ -234,7 +246,8 @@ class TimeTableAPI(Resource):
                 "day": timetable.day,
                 "start_time": timetable.start_time,
                 "end_time": timetable.end_time,
-                "course_id": timetable.course_id
+                "course_id": timetable.course_id,
+                "limit": timetable.limit
             })
 
         return data
@@ -246,6 +259,7 @@ class TimeTableAPI(Resource):
         start_time = args.get('start_time', None)
         end_time = args.get('end_time', None)
         course_id = args.get('course_id', None)
+        limit = args.get('limit', None)
 
         if not day:
             raise BusinessValidationError(status_code=400,error_code="BE1001",error_message="Day is required")
@@ -253,8 +267,10 @@ class TimeTableAPI(Resource):
             raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Start Time is required")
         if not end_time:
             raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="End Time is required")
+        if not course_id:
+            raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Course ID is required")
         
-        timetable = TimeTable(day=day, start_time=start_time, end_time=end_time, course_id=course_id)
+        timetable = TimeTable(day=day, start_time=start_time, end_time=end_time, course_id=course_id, limit=limit)
         db.session.add(timetable)
         db.session.commit()
         return timetable, 201
@@ -266,6 +282,7 @@ class TimeTableAPI(Resource):
         start_time = args.get('start_time', None)
         end_time = args.get('end_time', None)
         course_id = args.get('course_id', None)
+        limit = args.get('limit', None)
 
         timetable = TimeTable.query.get(id)
 
@@ -280,6 +297,8 @@ class TimeTableAPI(Resource):
             timetable.end_time = end_time
         if course_id:
             timetable.course_id = course_id
+        if limit:
+            timetable.limit = limit
         
         db.session.commit()
         return timetable, 200
@@ -404,7 +423,8 @@ class UserProfileAPI(Resource):
                     "day": timetable.day,
                     "start_time": timetable.start_time,
                     "end_time": timetable.end_time,
-                    "course_id": timetable.course_id
+                    "course_id": timetable.course_id,
+                    "limit": timetable.limit
                 })
             data.append({
                 "id": course.id,
@@ -412,6 +432,7 @@ class UserProfileAPI(Resource):
                 "description": course.description,
                 "image": course.image,
                 "student_id": course.student_id,
+                "faculty_name": course.faculty_name,
                 "time_table": Time_table
             })
         return data
@@ -420,7 +441,7 @@ class UserProfileAPI(Resource):
     
 
 #==============================API Endpoints========================================
-api.add_resource(CourseAPI, '/course', '/course/<int:id>')
+api.add_resource(FacultyCourseAPI, '/course/<name>', '/course/<int:id>', '/course')
 api.add_resource(TimeTableAPI, '/timetable', '/timetable/<int:id>')
 api.add_resource(TasksAPI, '/tasks', '/tasks/<int:id>')
 api.add_resource(UserProfileAPI, '/user-profile/<int:id>')
