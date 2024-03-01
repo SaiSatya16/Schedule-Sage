@@ -228,7 +228,38 @@ class FacultyCourseAPI(Resource):
         db.session.delete(course)
         db.session.commit()
         return 'Course Deleted Successfully', 204
-    
+
+#==============================Student Course API========================================
+class StudentCourseAPI(Resource):
+    def get(self):
+        data = []
+        #query all courses order by id in descending order
+        courses = Course.query.order_by(Course.id.desc()).all()
+        if not courses:
+            # Return an empty list if there are no courses
+            return data
+
+        for course in courses:
+            Time_table = []
+            for timetable in course.time_table:
+                Time_table.append({
+                    "id": timetable.id,
+                    "day": timetable.day,
+                    "start_time": timetable.start_time,
+                    "end_time": timetable.end_time,
+                    "course_id": timetable.course_id,
+                    "limit": timetable.limit
+                })
+            data.append({
+                "id": course.id,
+                "name": course.name,
+                "description": course.description,
+                "image": course.image,
+                "student_id": course.student_id,
+                "faculty_name": course.faculty_name,
+                "time_table": Time_table
+            })
+        return data
 
 #==============================TimeTable API========================================
 class TimeTableAPI(Resource):
@@ -445,6 +476,7 @@ api.add_resource(FacultyCourseAPI, '/course/<name>', '/course/<int:id>', '/cours
 api.add_resource(TimeTableAPI, '/timetable', '/timetable/<int:id>')
 api.add_resource(TasksAPI, '/tasks', '/tasks/<int:id>')
 api.add_resource(UserProfileAPI, '/user-profile/<int:id>')
+api.add_resource(StudentCourseAPI, '/courses')
 
 
        

@@ -8,7 +8,7 @@ const Navbar = Vue.component('Navbar', {
       <div class="navbar-nav">
         <button class="nav-item nav-link active d-lg-block" ><router-link class="nav-item nav-link active d-lg-block" to="/">Home</router-link></button>
         <button class="nav-item nav-link active d-lg-block" ><router-link class="nav-item nav-link active d-lg-block" to="/about">About Us</router-link></button>
-
+        <button class="nav-item nav-link active d-lg-block"  v-if="['Student'].includes(role)"><router-link class="nav-item nav-link active d-lg-block" to="/studentenroll">Enroll</router-link></button>
           <button class="nav-link" @click='logout'>Logout</button>
         </a>
       </div>

@@ -2,6 +2,7 @@ import Home from './components/home.js';
 import About from './components/about.js';
 import Login from './components/login.js';
 import Registration from './components/registration.js';
+import Studentenroll from './components/student_enroll.js';
 
 const routes = [
     {
@@ -24,6 +25,15 @@ const routes = [
         component: Registration,
         name: "Register"
     },
+    {
+        path: "/studentenroll",
+        component: Studentenroll,
+        name: "Studentenroll"
+    },
+    {
+        path: "*",
+        redirect: "/"
+    }
 ];
 
 const router = new VueRouter({
