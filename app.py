@@ -69,9 +69,32 @@ def user_registration():
             username=username,
             email=email,
             password=generate_password_hash(password),
-            roles=["Creator"])
+            roles=["Student"])
         db.session.commit()
-        return jsonify({"message": "User Created"}), 201
+        return jsonify({"message": "Student Created"}), 201
+    
+@app.post('/faculty-registration')
+def manager_registration():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+    username = data.get('username')
+    if not email:
+        return jsonify({"message": "email not provided"}), 400
+    if not password:
+        return jsonify({"message": "password not provided"}), 400
+    if not username:
+        return jsonify({"message": "username not provided"}), 400
+    if datastore.find_user(email=email):
+        return jsonify({"message": "User Already Exists"}), 400
+    else:
+        datastore.create_user(
+            username=username,
+            email=email,
+            password=generate_password_hash(password),
+            roles=["Faculty"])
+        db.session.commit()
+        return jsonify({"message": "Faculty Created"}), 201
 
 
 

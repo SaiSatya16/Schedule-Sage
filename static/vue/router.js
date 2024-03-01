@@ -3,6 +3,7 @@ import About from './components/about.js';
 import Login from './components/login.js';
 import Registration from './components/registration.js';
 import Studentenroll from './components/student_enroll.js';
+import Facultyregistration from './components/faculty_registration.js';
 
 const routes = [
     {
@@ -24,6 +25,11 @@ const routes = [
         path: "/register",
         component: Registration,
         name: "Register"
+    },
+    {
+        path: "/facultyregister",
+        component: Facultyregistration,
+        name: "Facultyregister"
     },
     {
         path: "/studentenroll",

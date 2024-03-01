@@ -17,7 +17,8 @@ const Login =Vue.component('login', {
             v-model="cred.password">
           </div>
           <button type="submit" class="btn btn-primary" @click='login'>Login</button>
-          <p class="mt-3">Don't have an account? <router-link to="/register">Register here</router-link></p>
+          <p class="mt-3">Don't have an account? <router-link to="/register">Register as Student here</router-link></p>
+          <p class="mt-3">Don't have an account? <router-link to="/facultyregister">Register as Faculty here</router-link></p>
       </div>
     </div>
   </div>`,

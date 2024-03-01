@@ -11,7 +11,7 @@ const Studentenroll = Vue.component("studentenroll", {
           <p>No courses available for enrollment.</p>
         </div>
         <div v-else>
-          <div v-for="course in courses" :key="course.id">
+          <div v-for="course in upcomingCourses" :key="course.id">
             <div class="list-group">
               <div class="list-group-item">
                 <h3 class="mb-1">{{ course.name }}</h3>
@@ -27,9 +27,6 @@ const Studentenroll = Vue.component("studentenroll", {
                     :aria-controls="'timetable' + course.id"
                   >
                     View Timetable
-                  </button>
-                  <button type="button" class="btn btn-sm btn-outline-primary" >
-                    Enroll
                   </button>
                 </div>
 
@@ -53,6 +50,13 @@ const Studentenroll = Vue.component("studentenroll", {
 
                         <i class="fas fa-users fa-lg text-center" style="font-size: 1.0rem"></i>
                         50/{{ timetable.limit }}
+
+                        <span class="mx-1">|</span>
+
+                        <button type="button" class="btn btn-sm btn-outline-primary">
+                        Enroll
+             </button>
+
                       </p>
                     </li>
                   </ul>
@@ -115,6 +119,37 @@ const Studentenroll = Vue.component("studentenroll", {
 
 
 
+    },
+
+    computed: {
+      upcomingCourses() {
+          // Create a copy of courses to avoid mutating the original data
+          const upcomingCourses = JSON.parse(JSON.stringify(this.courses));
+  
+          // Filter out past schedules and sort the remaining ones
+          upcomingCourses.forEach(course => {
+              course.time_table = course.time_table.filter(schedule => {
+                  const currentDate = new Date();
+                  const scheduleDate = new Date(schedule.day + ' ' + schedule.start_time);
+  
+                  // Include schedules with future dates and times
+                  return currentDate < scheduleDate;
+              });
+  
+              // Sort the remaining schedules by time and date
+              course.time_table.sort((a, b) => {
+                  // Compare by day and then by start_time
+                  if (a.day !== b.day) {
+                      return a.day.localeCompare(b.day);
+                  } else {
+                      return a.start_time.localeCompare(b.start_time);
+                  }
+              });
+          });
+  
+          // Include courses without schedules
+          return upcomingCourses;
+      },
     },
 
    
