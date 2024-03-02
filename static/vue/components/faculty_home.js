@@ -161,23 +161,26 @@ const Facultyhome = Vue.component("facultyhome", {
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <div class="my-3">
-                  <label for="Slot">SelectSlot</label>
-                  <select v-model="Slot" class="form-select" id="Slot">
-                    <option v-for="slot in classroomslots" :key="slot.id" :value="slot.slot_name">{{ slot.slot_name }}</option>
-                  </select>
-                </div>
+            <div class="my-3">
+              <label for="Slot">Select Slot</label>
+              <select v-model="Slot" class="form-select" id="Slot">
+                <option v-for="slot in classroomslots" :key="slot.id" :value="slot.slot_name" v-if="isSlotAvailable(slot.slot_name)">
+                  {{ slot.slot_name }}
+                </option>
+              </select>
+            </div>
                <div class="my-3">
                   <label for="studentLimit">Enter Student Limit</label>
                   <input v-model="studentLimit" type="number" id="studentLimit" class="form-control">
                </div>
                <div class="my-3">
-               <label for="room">Enter Room No.</label>
+                <label for="room">Enter Room No.</label>
                 <select v-model="room" class="form-select" id="room">
-                  <option v-for="room in rooms" :key="room.id" :value="room.name">{{ room.name }}</option>
+                  <option v-for="roomOption in rooms" :key="roomOption.id" :value="roomOption.name" v-if="isRoomAvailable(roomOption.name)">
+                    {{ roomOption.name }}
+                  </option>
                 </select>
-
-            </div>
+              </div>
 
             </div>
             <div class="modal-footer">
@@ -467,6 +470,30 @@ const Facultyhome = Vue.component("facultyhome", {
           console.log(data);
           this.error = data.error_message;
       }
+  },
+
+  isSlotAvailable(slotName) {
+    // Iterate through courses and their time tables to check if the slot is taken
+    for (const course of this.courses) {
+      for (const timetable of course.time_table) {
+        if (timetable.slot_name === slotName) {
+          return false; // Slot is already taken
+        }
+      }
+    }
+    return true; // Slot is available
+  },
+
+  isRoomAvailable(roomName) {
+    // Iterate through courses and their time tables to check if the room is assigned
+    for (const course of this.courses) {
+      for (const timetable of course.time_table) {
+        if (timetable.room === roomName) {
+          return false; // Room is already assigned
+        }
+      }
+    }
+    return true; // Room is available
   },
 
 
