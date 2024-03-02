@@ -6,7 +6,7 @@ const Facultyregistration = Vue.component("facultyregistration", {
   <div class="container">
       <div class="row justify-content-center">
         <div class="form-container col-md-6 p-5">
-          <h2 class="text-center">Registration Form</h2>
+          <h2 class="text-center">Faculty Registration</h2>
           <div class="alert alert-danger" v-if="error">
             {{ error }}
           </div>
