@@ -230,12 +230,12 @@ svg:hover span {
 
 .button-86::after,
 .button-86::before {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   right: 0;
   z-index: -99999;
-  transition: all .4s;
+  transition: all 0.4s;
 }
 
 .button-86::before {
@@ -343,4 +343,49 @@ svg:hover span {
   min-height: 100vh;
 }
 
+.greeting {
+  font-family: Helvetica;
+  font-weight: bold;
+}
 
+.add-course-btn {
+  background-color: lightcyan;
+  height: 40px;
+  width: 140px;
+  border-radius: 5px;
+  border-color: transparent;
+  box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.1);
+  transition: 0.3s ease;
+  font-weight: bolder;
+  color: black;
+}
+
+.add-course-btn:hover {
+  background-color: cyan;
+}
+
+.scope {
+  font-family: Helvetica;
+  font-size: larger;
+}
+
+.list-container {
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+.list-group {
+  list-style: none;
+}
+
+.elist-group-item {
+  background-color: #eef3f8;
+  border-radius: 10px;
+}
+
+.rlist-group-item {
+  background-color: #eef3f8;
+  border-radius: 10px;
+  border: red solid;
+  border-width: 1px;
+}

@@ -1,17 +1,17 @@
 const Facultyhome = Vue.component("facultyhome", {
-    template:  
-    `
+  template: `
 
-    <div class="main-container">
+    <div class="main-container pb-5">
     <div class="container">
    <div class="row">
       <div class="col-lg-8 offset-lg-2">
          <!-- Welcome Message -->
-         <div class="jumbotron">
-            <h1 class="display-4">Welcome, {{username}}!</h1>
-            <p>You can Add, delete, edit courses.</p>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCourseModal">
+         <div class="jumbotron pt-3 pb-3">
+            <h1 class="display-4 greeting">Welcome, {{username}}!</h1>
+            <p class="scope">You can Add, delete, edit courses.</p>
+            <button type="button" class="add-course-btn" data-bs-toggle="modal" data-bs-target="#addCourseModal">
             Add Course
+            <i class="fa fa-plus" aria-hidden="true"></i>
             </button>
          </div>
          <div class="alert alert-danger" v-if="error">
@@ -23,9 +23,9 @@ const Facultyhome = Vue.component("facultyhome", {
          <div v-else>
             <!-- List of Courses -->
             <h2>List of Courses</h2>
-            <div v-for="course in upcomingCourses" :key="course.id">
-               <div class="list-group">
-                  <div class="list-group-item">
+            <div v-for="course in upcomingCourses" :key="course.id" >
+               <div class="list-group mb-2">
+                  <div class="list-container p-3">
                      <h3 class="mb-1">{{ course.name }}</h3>
                      <p class="mb-1">by <span class="badge bg-secondary">{{ course.faculty_name }}</span></p>
                      <p class="mb-1">{{ course.description }}</p>
@@ -45,7 +45,7 @@ const Facultyhome = Vue.component("facultyhome", {
                      </div>
                      <div class="collapse mt-2" :id="'schedule' + course.id">
                         <ul class="list-group">
-                           <li class="list-group-item" v-for="timetable in course.time_table">
+                           <li class="elist-group-item mb-1 p-3" v-for="timetable in course.time_table">
                               <h5>{{ formatScheduleDate(timetable.day) }}</h5>
                               <p>
                                  <i class="fas fa-clock fa-lg text-center" style="font-size: 1.0rem"></i>
@@ -81,7 +81,7 @@ const Facultyhome = Vue.component("facultyhome", {
             </div>
             <div v-else>
                <ul class="list-group">
-                  <li class="list-group-item" v-for="schedule in currentDaySchedule" :key="schedule.id">
+                  <li class="rlist-group-item p-3 mb-1" v-for="schedule in currentDaySchedule" :key="schedule.id">
                      <h5>{{ schedule.course_name }}</h5>
                      <p>
                         <i class="fas fa-clock fa-lg text-center" style="font-size: 1.0rem"></i>
@@ -219,257 +219,262 @@ const Facultyhome = Vue.component("facultyhome", {
     
     `,
 
-    data(){
-        return {
-        courses: [],
-        Coursename: null,
-        Course_description: null,
-        error: null,
-        userRole: localStorage.getItem('role'),
-        token: localStorage.getItem('auth-token'),
-        username: localStorage.getItem('username'),
-        scheduleDate: null,
-        startTime: null,
-        endTime: null,
-        studentLimit: null
-        };
+  data() {
+    return {
+      courses: [],
+      Coursename: null,
+      Course_description: null,
+      error: null,
+      userRole: localStorage.getItem("role"),
+      token: localStorage.getItem("auth-token"),
+      username: localStorage.getItem("username"),
+      scheduleDate: null,
+      startTime: null,
+      endTime: null,
+      studentLimit: null,
+    };
+  },
+
+  methods: {
+    async getcourses() {
+      const res = await fetch("/course/" + this.username, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authentication-Token": this.token,
+          "Authentication-Role": this.userRole,
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log(data);
+        this.courses = data;
+      } else {
+        const data = await res.json();
+        console.log(data);
+        this.error = data.error_message;
+      }
     },
 
-    methods: {
-
-        async getcourses() {
-            const res = await fetch("/course/"+ this.username, {
-                method: "GET",
-                headers: {
-                "Content-Type": "application/json",
-                "Authentication-Token": this.token,
-                "Authentication-Role": this.userRole,
-                },
-            });
-            if (res.ok) {
-                const data = await res.json();
-                console.log(data);
-                this.courses = data;
-            } else {
-                const data = await res.json();
-                console.log(data);
-                this.error = data.error_message;
-            }
+    async addCourse() {
+      const res = await fetch("/course", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authentication-Token": this.token,
+          "Authentication-Role": this.userRole,
         },
-
-        async addCourse() {
-            const res = await fetch("/course", {
-                method: "POST",
-                headers: {
-                "Content-Type": "application/json",
-                "Authentication-Token": this.token,
-                "Authentication-Role": this.userRole,
-        
-                },
-                body: JSON.stringify({
-                name: this.Coursename,
-                description: this.Course_description,
-                faculty_name: this.username,
-                }),
-            });
-            if (res.ok) {
-                const data = await res.json();
-                console.log(data);
-                this.getcourses();
-            } else {
-                const data = await res.json();
-                console.log(data);
-                this.error = data.error_message;
-        
-            }
-            },
-
-        async editCourse(course) {
-            const res = await fetch("/course/" + course.id, {
-                method: "PUT",
-                headers: {
-                "Content-Type": "application/json",
-                "Authentication-Token": this.token,
-                "Authentication-Role": this.userRole,
-                },
-                body: JSON.stringify({
-                name: course.name,
-                description: course.description,
-                }),
-            });
-            if (res.ok) {
-                const data = await res.json();
-                console.log(data);
-                this.getcourses();
-            } else {
-                const data = await res.json();
-                console.log(data);
-                this.error = data.error_message;
-            }
-        },
-
-        async deleteCourse(courseId) {
-            const res = await fetch("/course/" + courseId, {
-                method: "DELETE",
-                headers: {
-                "Content-Type": "application/json",
-                "Authentication-Token": this.token,
-                "Authentication-Role": this.userRole,
-                },
-            });
-            if (res.ok) {
-                this.getcourses();
-            } else {
-                const data = await res.json();
-                console.log(data);
-                this.error = data.error_message;
-            }
-
-
-        },
-
-        async addSchedule(courseId) {
-            const res = await fetch("/timetable", {
-                method: "POST",
-                headers: {
-                "Content-Type": "application/json",
-                "Authentication-Token": this.token,
-                "Authentication-Role": this.userRole,
-                },
-                body: JSON.stringify({
-                course_id: courseId,
-                day: this.scheduleDate,
-                start_time: this.startTime,
-                end_time: this.endTime,
-                limit: this.studentLimit,
-                }),
-            });
-            if (res.ok) {
-                const data = await res.json();
-                console.log(data);
-                this.getcourses();
-            } else {
-                const data = await res.json();
-                console.log(data);
-                this.error = data.error_message;
-            }
-
-        },
-
-        async editSchedule(timetable) {
-            const res = await fetch("/timetable/" + timetable.id, {
-                method: "PUT",
-                headers: {
-                "Content-Type": "application/json",
-                "Authentication-Token": this.token,
-                "Authentication-Role": this.userRole,
-                },
-                body: JSON.stringify({
-                day: timetable.day,
-                start_time: timetable.start_time,
-                end_time: timetable.end_time,
-                limit: timetable.limit,
-                }),
-            });
-            if (res.ok) {
-                const data = await res.json();
-                console.log(data);
-                this.getcourses();
-            } else {
-                const data = await res.json();
-                console.log(data);
-                this.error = data.error_message;
-            }
-        },
-
-        async deleteSchedule(timetableId) {
-            const res = await fetch("/timetable/" + timetableId, {
-                method: "DELETE",
-                headers: {
-                "Content-Type": "application/json",
-                "Authentication-Token": this.token,
-                "Authentication-Role": this.userRole,
-                },
-            });
-            if (res.ok) {
-                this.getcourses();
-            } else {
-                const data = await res.json();
-                console.log(data);
-                this.error = data.error_message;
-            }
-        },
-
-        formatScheduleDate(dateString) {
-            // Convert the date string to a Date object
-            const date = new Date(dateString);
-    
-            // Get day name
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            const dayName = days[date.getDay()];
-    
-            // Format the date as "dd-mm-yyyy"
-            const formattedDate = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
-    
-            // Return the formatted date with day name
-            return `${formattedDate} (${dayName})`;
-        },
-
-
-        },
-        computed: {
-            upcomingCourses() {
-                // Create a copy of courses to avoid mutating the original data
-                const upcomingCourses = JSON.parse(JSON.stringify(this.courses));
-        
-                // Filter out past schedules and sort the remaining ones
-                upcomingCourses.forEach(course => {
-                    course.time_table = course.time_table.filter(schedule => {
-                        const currentDate = new Date();
-                        const scheduleDate = new Date(schedule.day + ' ' + schedule.start_time);
-        
-                        // Include schedules with future dates and times
-                        return currentDate < scheduleDate;
-                    });
-        
-                    // Sort the remaining schedules by time and date
-                    course.time_table.sort((a, b) => {
-                        // Compare by day and then by start_time
-                        if (a.day !== b.day) {
-                            return a.day.localeCompare(b.day);
-                        } else {
-                            return a.start_time.localeCompare(b.start_time);
-                        }
-                    });
-                });
-        
-                // Include courses without schedules
-                return upcomingCourses;
-            },
-            currentDaySchedule() {
-                const currentDate = new Date();
-                const currentDay = currentDate.toLocaleDateString(); // Format: MM/DD/YYYY
-            
-                // Filter schedules for the current day
-                const schedules = this.courses.flatMap(course => course.time_table.filter(schedule => {
-                    const scheduleDate = new Date(schedule.day);
-                    const scheduleDateString = scheduleDate.toLocaleDateString(); // Format: MM/DD/YYYY
-            
-                    // Compare by date
-                    return currentDay === scheduleDateString;
-                }));
-            
-                // Sort the schedules by time
-                return schedules.sort((a, b) => a.start_time.localeCompare(b.start_time));
-            },
-            
-        
-        },
-    mounted() {
+        body: JSON.stringify({
+          name: this.Coursename,
+          description: this.Course_description,
+          faculty_name: this.username,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log(data);
         this.getcourses();
-        document.title = "Faculty Home";
-    }
+      } else {
+        const data = await res.json();
+        console.log(data);
+        this.error = data.error_message;
+      }
+    },
 
+    async editCourse(course) {
+      const res = await fetch("/course/" + course.id, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authentication-Token": this.token,
+          "Authentication-Role": this.userRole,
+        },
+        body: JSON.stringify({
+          name: course.name,
+          description: course.description,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log(data);
+        this.getcourses();
+      } else {
+        const data = await res.json();
+        console.log(data);
+        this.error = data.error_message;
+      }
+    },
+
+    async deleteCourse(courseId) {
+      const res = await fetch("/course/" + courseId, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authentication-Token": this.token,
+          "Authentication-Role": this.userRole,
+        },
+      });
+      if (res.ok) {
+        this.getcourses();
+      } else {
+        const data = await res.json();
+        console.log(data);
+        this.error = data.error_message;
+      }
+    },
+
+    async addSchedule(courseId) {
+      const res = await fetch("/timetable", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authentication-Token": this.token,
+          "Authentication-Role": this.userRole,
+        },
+        body: JSON.stringify({
+          course_id: courseId,
+          day: this.scheduleDate,
+          start_time: this.startTime,
+          end_time: this.endTime,
+          limit: this.studentLimit,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log(data);
+        this.getcourses();
+      } else {
+        const data = await res.json();
+        console.log(data);
+        this.error = data.error_message;
+      }
+    },
+
+    async editSchedule(timetable) {
+      const res = await fetch("/timetable/" + timetable.id, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authentication-Token": this.token,
+          "Authentication-Role": this.userRole,
+        },
+        body: JSON.stringify({
+          day: timetable.day,
+          start_time: timetable.start_time,
+          end_time: timetable.end_time,
+          limit: timetable.limit,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log(data);
+        this.getcourses();
+      } else {
+        const data = await res.json();
+        console.log(data);
+        this.error = data.error_message;
+      }
+    },
+
+    async deleteSchedule(timetableId) {
+      const res = await fetch("/timetable/" + timetableId, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "Authentication-Token": this.token,
+          "Authentication-Role": this.userRole,
+        },
+      });
+      if (res.ok) {
+        this.getcourses();
+      } else {
+        const data = await res.json();
+        console.log(data);
+        this.error = data.error_message;
+      }
+    },
+
+    formatScheduleDate(dateString) {
+      // Convert the date string to a Date object
+      const date = new Date(dateString);
+
+      // Get day name
+      const days = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
+      const dayName = days[date.getDay()];
+
+      // Format the date as "dd-mm-yyyy"
+      const formattedDate = `${date.getDate().toString().padStart(2, "0")}-${(
+        date.getMonth() + 1
+      )
+        .toString()
+        .padStart(2, "0")}-${date.getFullYear()}`;
+
+      // Return the formatted date with day name
+      return `${formattedDate} (${dayName})`;
+    },
+  },
+  computed: {
+    upcomingCourses() {
+      // Create a copy of courses to avoid mutating the original data
+      const upcomingCourses = JSON.parse(JSON.stringify(this.courses));
+
+      // Filter out past schedules and sort the remaining ones
+      upcomingCourses.forEach((course) => {
+        course.time_table = course.time_table.filter((schedule) => {
+          const currentDate = new Date();
+          const scheduleDate = new Date(
+            schedule.day + " " + schedule.start_time
+          );
+
+          // Include schedules with future dates and times
+          return currentDate < scheduleDate;
+        });
+
+        // Sort the remaining schedules by time and date
+        course.time_table.sort((a, b) => {
+          // Compare by day and then by start_time
+          if (a.day !== b.day) {
+            return a.day.localeCompare(b.day);
+          } else {
+            return a.start_time.localeCompare(b.start_time);
+          }
+        });
+      });
+
+      // Include courses without schedules
+      return upcomingCourses;
+    },
+    currentDaySchedule() {
+      const currentDate = new Date();
+      const currentDay = currentDate.toLocaleDateString(); // Format: MM/DD/YYYY
+
+      // Filter schedules for the current day
+      const schedules = this.courses.flatMap((course) =>
+        course.time_table.filter((schedule) => {
+          const scheduleDate = new Date(schedule.day);
+          const scheduleDateString = scheduleDate.toLocaleDateString(); // Format: MM/DD/YYYY
+
+          // Compare by date
+          return currentDay === scheduleDateString;
+        })
+      );
+
+      // Sort the schedules by time
+      return schedules.sort((a, b) => a.start_time.localeCompare(b.start_time));
+    },
+  },
+  mounted() {
+    this.getcourses();
+    document.title = "Faculty Home";
+  },
 });
 
 export default Facultyhome;

@@ -1,10 +1,10 @@
-
-
-const Registration = Vue.component('registration', {
-    template: `<div class="container">
+const Registration = Vue.component("registration", {
+  template: `
+    <div class="main-container d-flex flex-column justify-content-center">
+    <div class="container">
       <div class="row justify-content-center">
-        <div class="col-md-6">
-          <h2 class="text-center">Registration Form</h2>
+        <div class="form-container col-md-6 p-5">
+          <h2 class="text-center">Student Registration</h2>
           <div class="alert alert-danger" v-if="error">
             {{ error }}
           </div>
@@ -23,60 +23,60 @@ const Registration = Vue.component('registration', {
             <input type="password" class="form-control" id="password" name="password" placeholder="Enter password"
               v-model="user.password">
           </div>
-          <div class="form-group">
+          <div class="form-group mb-2">
             <label for="confirmPassword">Confirm Password:</label>
             <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
               placeholder="Confirm password" v-model="user.confirmPassword">
           </div>
-          <button type="submit" class="btn btn-primary" @click="register">Register</button>
+
+          <button type="submit" class="button-86" type="submit" role="button" @click='register'>Register</button>
           <p class="mt-3">Already have an account? <router-link to="/login">Login here</router-link></p>
         </div>
       </div>
-    </div>`,
-    data() {
-      return {
-        user: {
-          username: null,
-          email: null,
-          password: null,
-          confirmPassword: null,
-        },
-        error: null,
-      };
-    },
-    methods: {
-      async register() {
-        if (this.user.password !== this.user.confirmPassword) {
-          this.error = "Passwords do not match.";
-          return;
-        }
-  
-        const res = await fetch('/user-registration', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: this.user.username,
-            email: this.user.email,
-            password: this.user.password,
-          }),
-        });
-  
-        if (res.ok) {
-          this.$router.push('/login');
-
-        } else {
-          const data = await res.json();
-          this.error = data.message;
-
-        }
+    </div>
+    </div>
+    `,
+  data() {
+    return {
+      user: {
+        username: null,
+        email: null,
+        password: null,
+        confirmPassword: null,
       },
+      error: null,
+    };
+  },
+  methods: {
+    async register() {
+      if (this.user.password !== this.user.confirmPassword) {
+        this.error = "Passwords do not match.";
+        return;
+      }
+
+      const res = await fetch("/user-registration", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: this.user.username,
+          email: this.user.email,
+          password: this.user.password,
+        }),
+      });
+
+      if (res.ok) {
+        this.$router.push("/login");
+      } else {
+        const data = await res.json();
+        this.error = data.message;
+      }
     },
-    mounted: function () {
-      document.title = 'Registration';
-    },
-  });
-  
-  export default Registration;
-  
+  },
+  mounted: function () {
+    document.title = "Registration";
+  },
+});
+
+export default Registration;
