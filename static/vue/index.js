@@ -11,7 +11,7 @@ new Vue ({
     el: '#app',
     template: `<div>
     <Navbar :key='has_changed'/>
-    <router-view class="m-3"/></div>`,
+    <router-view/></div>`,
     router,
     components: {
         Navbar,

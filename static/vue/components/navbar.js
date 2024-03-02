@@ -1,9 +1,9 @@
-const Navbar = Vue.component('Navbar', {
-    template: `
+const Navbar = Vue.component("Navbar", {
+  template: `
 
-  <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top mb-2 border-bottom">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top border-bottom">
     <div class="container">
-    <a class="navbar-brand" href="/" > Scheduling-App </a>
+    <a class="navbar-brand" href="/" > Scheduling App </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -16,7 +16,7 @@ const Navbar = Vue.component('Navbar', {
         <li class="nav-item active">
         <a class="nav-link" href="/#/" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
           <i class="fas fa-home fa-lg text-center" style="color: black"></i>
-          <div class="menutext mt-2" style="color: black">  <router-link class="menutext mt-2" to="/">Home</router-link></div>
+          <router-link class="menutext mt-2" to="/">Home</router-link>
         </a>
       </li>
       
@@ -53,66 +53,70 @@ const Navbar = Vue.component('Navbar', {
   </nav>
   
   `,
-    data() {
-      return {
-        role: localStorage.getItem('role'),
-        is_login: localStorage.getItem('auth-token'),
-        id : localStorage.getItem('id'),
-        inactivityTimeout: 5 * 60 * 1000, // 30 minutes in milliseconds
-        inactivityTimer: null,
-      };
+  data() {
+    return {
+      role: localStorage.getItem("role"),
+      is_login: localStorage.getItem("auth-token"),
+      id: localStorage.getItem("id"),
+      inactivityTimeout: 5 * 60 * 1000, // 30 minutes in milliseconds
+      inactivityTimer: null,
+    };
+  },
+  methods: {
+    logout() {
+      localStorage.removeItem("auth-token");
+      localStorage.removeItem("role");
+      localStorage.removeItem("id");
+      localStorage.removeItem("username");
+      this.$router.push({ path: "/login" });
     },
-    methods: {
-      logout() {
-        localStorage.removeItem('auth-token');
-        localStorage.removeItem('role');
-        localStorage.removeItem('id');
-        localStorage.removeItem('username');
-        this.$router.push({ path: '/login' });
-      },
-      handleUserActivity() {
-        // Update the last activity timestamp
-        localStorage.setItem('lastActivityTimestamp', Date.now().toString());
-      },
-      checkInactivity() {
-        const lastActivityTimestamp = localStorage.getItem('lastActivityTimestamp');
-        const currentTime = Date.now();
-  
-        if (lastActivityTimestamp && currentTime - lastActivityTimestamp > this.inactivityTimeout) {
-          // User has been inactive for too long, clear local storage
-          this.clearLocalStorage();
-        }
-      },
-      clearLocalStorage() {
-        localStorage.removeItem('auth-token');
-        localStorage.removeItem('role');
-        this.$router.push({ path: '/login' });
-      },
-      startInactivityTimer() {
-        this.inactivityTimer = setInterval(() => {
-          this.checkInactivity();
-        }, 60000); // Check every minute (adjust as needed)
-      },
-      stopInactivityTimer() {
-        clearInterval(this.inactivityTimer);
-      },
+    handleUserActivity() {
+      // Update the last activity timestamp
+      localStorage.setItem("lastActivityTimestamp", Date.now().toString());
     },
-    mounted() {
-      // Set up event listeners to track user activity
-      document.addEventListener('mousemove', this.handleUserActivity);
-      document.addEventListener('keydown', this.handleUserActivity);
-      document.title = "Navbar";
-  
-      // Start the inactivity timer
-      this.startInactivityTimer();
+    checkInactivity() {
+      const lastActivityTimestamp = localStorage.getItem(
+        "lastActivityTimestamp"
+      );
+      const currentTime = Date.now();
+
+      if (
+        lastActivityTimestamp &&
+        currentTime - lastActivityTimestamp > this.inactivityTimeout
+      ) {
+        // User has been inactive for too long, clear local storage
+        this.clearLocalStorage();
+      }
     },
-    beforeDestroy() {
-      // Clean up event listeners and the inactivity timer
-      document.removeEventListener('mousemove', this.handleUserActivity);
-      document.removeEventListener('keydown', this.handleUserActivity);
-      this.stopInactivityTimer();
+    clearLocalStorage() {
+      localStorage.removeItem("auth-token");
+      localStorage.removeItem("role");
+      this.$router.push({ path: "/login" });
     },
-  });
-  
-  export default Navbar;
-  
+    startInactivityTimer() {
+      this.inactivityTimer = setInterval(() => {
+        this.checkInactivity();
+      }, 60000); // Check every minute (adjust as needed)
+    },
+    stopInactivityTimer() {
+      clearInterval(this.inactivityTimer);
+    },
+  },
+  mounted() {
+    // Set up event listeners to track user activity
+    document.addEventListener("mousemove", this.handleUserActivity);
+    document.addEventListener("keydown", this.handleUserActivity);
+    document.title = "Navbar";
+
+    // Start the inactivity timer
+    this.startInactivityTimer();
+  },
+  beforeDestroy() {
+    // Clean up event listeners and the inactivity timer
+    document.removeEventListener("mousemove", this.handleUserActivity);
+    document.removeEventListener("keydown", this.handleUserActivity);
+    this.stopInactivityTimer();
+  },
+});
+
+export default Navbar;
