@@ -235,6 +235,10 @@ class FacultyCourseAPI(Resource):
             raise NotFoundError(status_code=404)
         
         db.session.query(TimeTable).filter_by(course_id=id).delete()
+
+        #delete the student timetable if the course is deleted
+        db.session.query(StudentTimeTable).filter_by(course_id=id).delete()
+
         db.session.delete(course)
         db.session.commit()
         return 'Course Deleted Successfully', 204
@@ -355,6 +359,8 @@ class TimeTableAPI(Resource):
         if not timetable:
             raise NotFoundError(status_code=404)
         
+        #delete the student timetable if the course timetable is deleted
+        db.session.query(StudentTimeTable).filter_by(course_id=timetable.course_id, day=timetable.day, start_time=timetable.start_time, end_time=timetable.end_time).delete()
         db.session.delete(timetable)
         db.session.commit()
         return 'TimeTable Deleted Successfully', 204
