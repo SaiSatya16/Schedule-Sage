@@ -343,6 +343,9 @@ class TimeTableAPI(Resource):
         room = args.get('room', None)
         current_count = args.get('current_count', None)
 
+        check = TimeTable.query.filter_by(day=day, start_time=start_time, end_time=end_time, room=room).first()
+        if check:
+            raise BusinessValidationError(status_code=400,error_code="BE1003",error_message="This slot is already taken. Please choose another slot.")
         if not day:
             raise BusinessValidationError(status_code=400,error_code="BE1001",error_message="Day is required")
         if not start_time:

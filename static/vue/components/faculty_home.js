@@ -174,13 +174,12 @@ const Facultyhome = Vue.component("facultyhome", {
                   <input v-model="studentLimit" type="number" id="studentLimit" class="form-control">
                </div>
                <div class="my-3">
-                <label for="room">Enter Room No.</label>
+               <label for="room">Enter Room No.</label>
                 <select v-model="room" class="form-select" id="room">
-                  <option v-for="roomOption in rooms" :key="roomOption.id" :value="roomOption.name" v-if="isRoomAvailable(roomOption.name)">
-                    {{ roomOption.name }}
-                  </option>
+                  <option v-for="room in rooms" :key="room.id" :value="room.name">{{ room.name }}</option>
                 </select>
-              </div>
+
+            </div>
 
             </div>
             <div class="modal-footer">
@@ -356,7 +355,7 @@ const Facultyhome = Vue.component("facultyhome", {
       } else {
         const data = await res.json();
         console.log(data);
-        this.error = data.error_message;
+        alert(data.error_message);
       }
     },
 
@@ -482,18 +481,6 @@ const Facultyhome = Vue.component("facultyhome", {
       }
     }
     return true; // Slot is available
-  },
-
-  isRoomAvailable(roomName) {
-    // Iterate through courses and their time tables to check if the room is assigned
-    for (const course of this.courses) {
-      for (const timetable of course.time_table) {
-        if (timetable.room === roomName) {
-          return false; // Room is already assigned
-        }
-      }
-    }
-    return true; // Room is available
   },
 
 
