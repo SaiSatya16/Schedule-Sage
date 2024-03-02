@@ -72,7 +72,7 @@ const Studenthome = Vue.component("studenthome", {
     todayTimetable() {
       // Get the current day
       const currentDay = new Date().getDay();
-
+    
       // Filter the timetable for today
       return this.timetable.filter((schedule) => {
         const scheduleDay = new Date(schedule.day).getDay();
@@ -82,15 +82,22 @@ const Studenthome = Vue.component("studenthome", {
     upcomingTimetable() {
       // Get the current date
       const currentDate = new Date();
-
-      // Filter the timetable for upcoming schedules
+    
+      // Filter the timetable for upcoming schedules that are not today
       return this.timetable.filter((schedule) => {
         const scheduleDate = new Date(schedule.day);
-        return scheduleDate > currentDate;
+        return scheduleDate > currentDate && !this.isTodaySchedule(schedule);
       });
     },
   },
   methods: {
+
+        isTodaySchedule(schedule) {
+            // Check if the schedule is for today
+            const currentDay = new Date().getDay();
+            const scheduleDay = new Date(schedule.day).getDay();
+            return scheduleDay === currentDay;
+        },
     async getstudenttimetable() {
       const res = await fetch("/student-timetable/" + this.student_id, {
         method: "GET",

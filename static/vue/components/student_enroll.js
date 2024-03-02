@@ -53,7 +53,7 @@ const Studentenroll = Vue.component("studentenroll", {
                           <span class="mx-1">|</span>
 
                           <i class="fas fa-users fa-lg text-center" style="font-size: 1.0rem"></i>
-                          50/{{ timetable.limit }}
+                          {{timetable.current_count}}/{{ timetable.limit }}
 
                           <span class="mx-1">|</span>
 

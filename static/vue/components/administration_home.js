@@ -258,7 +258,7 @@ const Administrationhome = Vue.component("administrationhome", {
                 } else {
                 const data = await res.json();
                 console.log(data);
-                this.error = data.error_message;
+                alert(data.error_message);
                 }
             },
 

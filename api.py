@@ -569,6 +569,9 @@ class StudentTimeTableAPI(Resource):
         course_id = args.get('course_id', None)
         student_id = args.get('student_id', None)
 
+        
+
+
         if not day:
             raise BusinessValidationError(status_code=400,error_code="BE1001",error_message="Day is required")
         if not start_time:
@@ -584,7 +587,18 @@ class StudentTimeTableAPI(Resource):
         student_time_table = StudentTimeTable.query.filter_by(day=day, start_time=start_time, end_time=end_time, course_id=course_id, student_id=student_id).first()
         if student_time_table:
             raise BusinessValidationError(status_code=400,error_code="BE1003",error_message="You are already enrolled for this course slot. Please choose another slot.")
-            
+        
+        time_clash = StudentTimeTable.query.filter_by(student_id=student_id, day=day, start_time=start_time, end_time=end_time).first()
+        if time_clash:
+            raise BusinessValidationError(status_code=400,error_code="BE1003",error_message="You have a time clash with another course. Please choose another slot.")
+        
+        timeslot = TimeTable.query.filter_by(day=day, start_time=start_time, end_time=end_time, course_id=course_id).first()
+        current_count = timeslot.current_count
+        if current_count > timeslot.limit:
+            raise BusinessValidationError(status_code=400,error_code="BE1003",error_message="This slot is already full. Please choose another slot.")
+        current_count = current_count + 1
+        timeslot.current_count = current_count
+        db.session.commit()   
         student_time_table = StudentTimeTable(day=day, start_time=start_time, end_time=end_time, course_id=course_id, student_id=student_id)
         db.session.add(student_time_table)
         db.session.commit()
@@ -645,6 +659,11 @@ class ClassRoomAPI(Resource):
             raise BusinessValidationError(status_code=400,error_code="BE1001",error_message="Class Room name is required")
         if not description:
             raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Class Room description is required")
+        
+        #check if the class room is already exist
+        check = ClassRoom.query.filter_by(name=name).first()
+        if check:
+            raise BusinessValidationError(status_code=400,error_code="BE1003",error_message="This class room is already exist. Please choose another class room.")
         
         class_room = ClassRoom(name=name, description=description)
         db.session.add(class_room)
@@ -713,6 +732,11 @@ class ClassRoomSlotsAPI(Resource):
             raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="End Time is required")
         
         slot_name = day + " " + start_time + " - " + end_time
+
+        #check if the slot is already exist
+        check = ClassRoomSlots.query.filter_by(day=day, start_time=start_time, end_time=end_time).first()
+        if check:
+            raise BusinessValidationError(status_code=400,error_code="BE1003",error_message="This slot is already exist. Please choose another slot.")
         
         class_room_slot = ClassRoomSlots(day=day, start_time=start_time, end_time=end_time, slot_name=slot_name)
         db.session.add(class_room_slot)
