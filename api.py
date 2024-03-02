@@ -71,7 +71,11 @@ timetable_fields = {
     'day': fields.String,
     'start_time': fields.String,
     'end_time': fields.String,
-    'course_id': fields.Integer
+    'course_id': fields.Integer,
+    'limit': fields.Integer,
+    'room': fields.String,
+    'current_count': fields.Integer,
+    'slot_name': fields.String
 }
 
 tasks_fields = {
@@ -93,6 +97,19 @@ student_time_table_fields = {
     'student_id': fields.Integer
 }
 
+ClassRoom_fields = {
+    'id': fields.Integer,
+    'name': fields.String,
+    'description': fields.String
+}
+
+ClassRoomSlots_fields = {
+    'id': fields.Integer,
+    'day': fields.String,
+    'start_time': fields.String,
+    'end_time': fields.String
+}
+
 
 #====================Create request pares=======================================
 
@@ -110,6 +127,9 @@ create_timetable_parser.add_argument('end_time')
 create_timetable_parser.add_argument('course_id')
 create_timetable_parser.add_argument('limit')
 create_timetable_parser.add_argument('student_id')
+create_timetable_parser.add_argument('room')
+create_timetable_parser.add_argument('current_count')
+create_timetable_parser.add_argument('slot')
 
 create_tasks_parser = reqparse.RequestParser()
 create_tasks_parser.add_argument('name')
@@ -135,6 +155,10 @@ update_timetable_parser.add_argument('end_time')
 update_timetable_parser.add_argument('course_id')
 update_timetable_parser.add_argument('limit')
 update_timetable_parser.add_argument('student_id')
+update_timetable_parser.add_argument('room')
+update_timetable_parser.add_argument('current_count')
+update_timetable_parser.add_argument('slot')
+
 
 
 update_tasks_parser = reqparse.RequestParser()
@@ -169,6 +193,9 @@ class FacultyCourseAPI(Resource):
                     "course_id": timetable.course_id,
                     "limit": timetable.limit,
                     "course_name": course.name,
+                    "room": timetable.room,
+                    "current_count": timetable.current_count,
+                    "slot_name": timetable.slot_name
                 })
             
             
@@ -298,7 +325,8 @@ class TimeTableAPI(Resource):
                 "start_time": timetable.start_time,
                 "end_time": timetable.end_time,
                 "course_id": timetable.course_id,
-                "limit": timetable.limit
+                "limit": timetable.limit,
+                "slot_name": timetable.slot_name,
             })
 
         return data
@@ -306,11 +334,14 @@ class TimeTableAPI(Resource):
     @marshal_with(timetable_fields)
     def post(self):
         args = create_timetable_parser.parse_args()
-        day = args.get('day', None)
-        start_time = args.get('start_time', None)
-        end_time = args.get('end_time', None)
+        slot = args.get('slot', None)
+        day = slot.split(" ")[0]
+        start_time = slot.split(" ")[1]
+        end_time = slot.split(" ")[3]
         course_id = args.get('course_id', None)
         limit = args.get('limit', None)
+        room = args.get('room', None)
+        current_count = args.get('current_count', None)
 
         if not day:
             raise BusinessValidationError(status_code=400,error_code="BE1001",error_message="Day is required")
@@ -320,8 +351,12 @@ class TimeTableAPI(Resource):
             raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="End Time is required")
         if not course_id:
             raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Course ID is required")
+        if not limit:
+            raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Limit is required")
+        if not room:
+            raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Room is required")
         
-        timetable = TimeTable(day=day, start_time=start_time, end_time=end_time, course_id=course_id, limit=limit)
+        timetable = TimeTable(day=day, start_time=start_time, end_time=end_time, course_id=course_id, limit=limit, room=room, current_count=current_count, slot_name=slot)
         db.session.add(timetable)
         db.session.commit()
         return timetable, 201
@@ -329,10 +364,12 @@ class TimeTableAPI(Resource):
     @marshal_with(timetable_fields)
     def put(self, id):
         args = update_timetable_parser.parse_args()
-        day = args.get('day', None)
-        start_time = args.get('start_time', None)
-        end_time = args.get('end_time', None)
+        slot = args.get('slot', None)
+        day = slot.split(" ")[0]
+        start_time = slot.split(" ")[1]
+        end_time = slot.split(" ")[3]
         course_id = args.get('course_id', None)
+        room = args.get('room', None)
         limit = args.get('limit', None)
 
         timetable = TimeTable.query.get(id)
@@ -350,6 +387,10 @@ class TimeTableAPI(Resource):
             timetable.course_id = course_id
         if limit:
             timetable.limit = limit
+        if slot:
+            timetable.slot_name = slot
+        if room:
+            timetable.room = room
         
         db.session.commit()
         return timetable, 200
@@ -573,6 +614,146 @@ class StudentTimeTableAPI(Resource):
 
         db.session.commit()
         return student_time_table, 200
+    
+#==============================Clssroom API========================================
+class ClassRoomAPI(Resource):
+    def get(self):
+        data = []
+        #query all class rooms order
+        class_rooms = ClassRoom.query.all()
+        if not class_rooms:
+            # Return an empty list if there are no class rooms
+            return data
+        
+        for class_room in class_rooms:
+            data.append({
+                "id": class_room.id,
+                "name": class_room.name,
+                "description": class_room.description
+            })
+        return data
+    
+    @marshal_with(ClassRoom_fields)
+    def post(self):
+        name = request.json.get('roomname', None)
+        description = request.json.get('room_description', None)
+
+        if not name:
+            raise BusinessValidationError(status_code=400,error_code="BE1001",error_message="Class Room name is required")
+        if not description:
+            raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Class Room description is required")
+        
+        class_room = ClassRoom(name=name, description=description)
+        db.session.add(class_room)
+        db.session.commit()
+        return class_room, 201
+    
+    @marshal_with(ClassRoom_fields)
+    def put(self, id):
+        name = request.json.get('roomname', None)
+        description = request.json.get('room_description', None)
+
+        class_room = ClassRoom.query.get(id)
+
+        if not class_room:
+            raise NotFoundError(status_code=404)
+        
+        if name:
+            class_room.name = name
+        if description:
+            class_room.description = description
+        
+        db.session.commit()
+        return class_room, 200
+    
+    def delete(self, id):
+        class_room = ClassRoom.query.get(id)
+        if not class_room:
+            raise NotFoundError(status_code=404)
+        
+        db.session.delete(class_room)
+        db.session.commit()
+        return 'Class Room Deleted Successfully', 204
+    
+#==============================ClassRoomSlots API========================================
+class ClassRoomSlotsAPI(Resource):
+    def get(self):
+        data = []
+        #query all class room slots order by id in descending order
+        class_room_slots = ClassRoomSlots.query.order_by(ClassRoomSlots.id.desc()).all()
+        if not class_room_slots:
+            # Return an empty list if there are no class room slots
+            return data
+
+        for class_room_slot in class_room_slots:
+            data.append({
+                "id": class_room_slot.id,
+                "day": class_room_slot.day,
+                "start_time": class_room_slot.start_time,
+                "end_time": class_room_slot.end_time,
+                "slot_name": class_room_slot.slot_name
+            })
+
+        return data
+    
+    @marshal_with(ClassRoomSlots_fields)
+    def post(self):
+        day = request.json.get('day', None)
+        start_time = request.json.get('start_time', None)
+        end_time = request.json.get('end_time', None)
+
+        if not day:
+            raise BusinessValidationError(status_code=400,error_code="BE1001",error_message="Day is required")
+        if not start_time:
+            raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Start Time is required")
+        if not end_time:
+            raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="End Time is required")
+        
+        slot_name = day + " " + start_time + " - " + end_time
+        
+        class_room_slot = ClassRoomSlots(day=day, start_time=start_time, end_time=end_time, slot_name=slot_name)
+        db.session.add(class_room_slot)
+        db.session.commit()
+        return class_room_slot, 201
+    
+    @marshal_with(ClassRoomSlots_fields)
+    def put(self, id):
+        day = request.json.get('day', None)
+        start_time = request.json.get('start_time', None)
+        end_time = request.json.get('end_time', None)
+
+        class_room_slot = ClassRoomSlots.query.get(id)
+
+        if not class_room_slot:
+            raise NotFoundError(status_code=404)
+        
+        slot_name = day + " " + start_time + " - " + end_time
+        
+        if day:
+            class_room_slot.day = day
+        if start_time:
+            class_room_slot.start_time = start_time
+        if end_time:
+            class_room_slot.end_time = end_time
+        if slot_name:
+            class_room_slot.slot_name = slot_name
+        
+        db.session.commit()
+        return class_room_slot, 200
+    
+    def delete(self, id):
+        class_room_slot = ClassRoomSlots.query.get(id)
+        if not class_room_slot:
+            raise NotFoundError(status_code=404)
+        
+        db.session.delete(class_room_slot)
+        db.session.commit()
+        return 'Class Room Slot Deleted Successfully', 204
+    
+    
+
+    
+
 
 
 
@@ -585,6 +766,8 @@ api.add_resource(TasksAPI, '/tasks', '/tasks/<int:id>')
 api.add_resource(UserProfileAPI, '/user-profile/<int:id>')
 api.add_resource(StudentCourseAPI, '/courses/<int:id>')
 api.add_resource(StudentTimeTableAPI, '/student-timetable', '/student-timetable/<int:id>')
+api.add_resource(ClassRoomAPI, '/class-room', '/class-room/<int:id>')
+api.add_resource(ClassRoomSlotsAPI, '/class-room-slots', '/class-room-slots/<int:id>')
 
 
        
