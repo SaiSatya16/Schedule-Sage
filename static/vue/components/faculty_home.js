@@ -2,7 +2,8 @@ const Facultyhome = Vue.component("facultyhome", {
     template:  
     `
 
-    <div class="container mt-4">
+    <div class="main-container">
+    <div class="container">
    <div class="row">
       <div class="col-lg-8 offset-lg-2">
          <!-- Welcome Message -->
@@ -213,6 +214,7 @@ const Facultyhome = Vue.component("facultyhome", {
          </div>
       </div>
    </div>
+</div>
 </div>
     
     `,
