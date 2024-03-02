@@ -21,7 +21,7 @@ Tired of juggling classes, deadlines, and activities? Schedule Sage empowers you
    `python upload_initial_data.py`
 
 6. Start the Flask server:
-   `flask run`
+   `python app.py`
 
 7. Visit `localhost:5000` in your browser to access the Schedule Sage
 
