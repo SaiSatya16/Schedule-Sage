@@ -37,7 +37,7 @@ const Studentenroll = Vue.component("studentenroll", {
                   <!-- Timetable Collapse -->
                   <div class="collapse mt-2" :id="'timetable' + course.id">
                     <ul class="list-group">
-                      <li class="list-group-item" v-for="timetable in course.time_table" :key="timetable.id">
+                      <li class="rlist-group-item mt-2 p-3" v-for="timetable in course.time_table" :key="timetable.id">
                         <h5>{{ formatScheduleDate(timetable.day) }}</h5>
                         <p>
                           <i class="fas fa-clock fa-lg text-center" style="font-size: 1.0rem"></i>
@@ -75,10 +75,10 @@ const Studentenroll = Vue.component("studentenroll", {
 
   data() {
     return {
-      userRole: localStorage.getItem('role'),
-      token: localStorage.getItem('auth-token'),
-      username: localStorage.getItem('username'),
-      student_id: localStorage.getItem('id'),
+      userRole: localStorage.getItem("role"),
+      token: localStorage.getItem("auth-token"),
+      username: localStorage.getItem("username"),
+      student_id: localStorage.getItem("id"),
       courses: [],
       error: null,
       searchInput: "",
@@ -140,11 +140,23 @@ const Studentenroll = Vue.component("studentenroll", {
       const date = new Date(dateString);
 
       // Get day name
-      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const days = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
       const dayName = days[date.getDay()];
 
       // Format the date as "dd-mm-yyyy"
-      const formattedDate = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
+      const formattedDate = `${date.getDate().toString().padStart(2, "0")}-${(
+        date.getMonth() + 1
+      )
+        .toString()
+        .padStart(2, "0")}-${date.getFullYear()}`;
 
       // Return the formatted date with day name
       return `${formattedDate} (${dayName})`;
@@ -184,7 +196,9 @@ const Studentenroll = Vue.component("studentenroll", {
       upcomingCourses.forEach((course) => {
         course.time_table = course.time_table.filter((schedule) => {
           const currentDate = new Date();
-          const scheduleDate = new Date(schedule.day + ' ' + schedule.start_time);
+          const scheduleDate = new Date(
+            schedule.day + " " + schedule.start_time
+          );
 
           // Include schedules with future dates and times
           return currentDate < scheduleDate;

@@ -37,7 +37,7 @@ const Studenthome = Vue.component("studenthome", {
                         </div>
                         <div v-else>
                             <ul class="list-group ">
-                                <li class="list-group-item" v-for="schedule in upcomingTimetable" :key="schedule.id">
+                                <li class="list-group-item mt-2" v-for="schedule in upcomingTimetable" :key="schedule.id">
                                     <h5>{{ schedule.course_name }}</h5>
                                     <p class="mb-1">by <span class="badge bg-secondary">{{ schedule.faculty_name }}</span></p>
                                     <p>
