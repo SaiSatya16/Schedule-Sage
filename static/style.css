@@ -435,4 +435,9 @@ svg:hover span {
 /*student_home.js*/
 .schedule-time {
   font-family: "Roboto";
+  color: red;
+}
+
+.schedule-heading {
+  color: red;
 }

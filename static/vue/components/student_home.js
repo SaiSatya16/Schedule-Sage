@@ -17,10 +17,10 @@ const Studenthome = Vue.component("studenthome", {
                         <div v-else>
                             <ul class="list-group">
                                 <li class="rlist-group-item p-3 mb-1" v-for="schedule in todayTimetable" :key="schedule.id">
-                                    <h5>{{ schedule.course_name }}</h5>
+                                    <h5 class="schedule-heading">{{ schedule.course_name }}</h5>
                                     <p class="mb-1">by <span class="badge bg-secondary">{{ schedule.faculty_name }}</span></p>
                                     <p class="schedule-time">
-                                        <i class="fas fa-clock fa-lg text-center" style="font-size: 1.0rem"></i>
+                                        <i class="fas fa-clock fa-lg text-center" style="font-size: 1.0rem; "></i>
                                         {{ schedule.start_time }}
                                         <span class="mx-1">To</span>
                                         {{ schedule.end_time }}
