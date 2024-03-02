@@ -1,12 +1,13 @@
 const Navbar = Vue.component("Navbar", {
   template: `
 
-  <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top border-bottom">
+  <nav class="navbar navbar-expand-lg sticky-top border-bottom navbar-container">
     <div class="container">
     <a class="navbar-brand" href="/" > SCHEDULE SAGE </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
+      <img src="Scheduling-App\static\mjolnir.png"/>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <ul class="navbar-nav ms-auto">
 
@@ -34,16 +35,18 @@ const Navbar = Vue.component("Navbar", {
         <a class="nav-link" href="#/studentenroll" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
           <i class="fas fa-bell fa-lg text-center"></i>
           <div class="menutext mt-2"><router-link class="menutext mt-2" to="/studentenroll">Enroll</router-link></div>
+          
         </a>
+        
       </li>
       
       
       <!-- Logout -->
-      <li class="nav-item border-left h-25">
-      <button @click='logout' class="nav-link active d-lg-block" style="display: flex; flex-direction: column; align-items: center; text-align: center; border: none; background: none;">
+      <li class="nav-item">
+      <a @click='logout' class="nav-link active d-lg-block" style="display: flex; flex-direction: column; align-items: center; text-align: center; border: none; background: none;">
           <i class="fas fa-sign-out-alt fa-lg text-center"></i>
           <div class="menutext">Logout</div>
-      </button>
+      </a>
       </li>
 
       
@@ -51,6 +54,8 @@ const Navbar = Vue.component("Navbar", {
       </div>
     </div>
   </nav>
+
+  
   
   `,
   data() {
