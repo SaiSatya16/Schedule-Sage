@@ -84,6 +84,14 @@ tasks_fields = {
     'student_id': fields.Integer
 }
 
+student_time_table_fields = {
+    'id': fields.Integer,
+    'day': fields.String,
+    'start_time': fields.String,
+    'end_time': fields.String,
+    'course_id': fields.Integer,
+    'student_id': fields.Integer
+}
 
 
 #====================Create request pares=======================================
@@ -101,6 +109,7 @@ create_timetable_parser.add_argument('start_time')
 create_timetable_parser.add_argument('end_time')
 create_timetable_parser.add_argument('course_id')
 create_timetable_parser.add_argument('limit')
+create_timetable_parser.add_argument('student_id')
 
 create_tasks_parser = reqparse.RequestParser()
 create_tasks_parser.add_argument('name')
@@ -125,6 +134,7 @@ update_timetable_parser.add_argument('start_time')
 update_timetable_parser.add_argument('end_time')
 update_timetable_parser.add_argument('course_id')
 update_timetable_parser.add_argument('limit')
+update_timetable_parser.add_argument('student_id')
 
 
 update_tasks_parser = reqparse.RequestParser()
@@ -231,25 +241,31 @@ class FacultyCourseAPI(Resource):
 
 #==============================Student Course API========================================
 class StudentCourseAPI(Resource):
-    def get(self):
+    def get(self,id):
         data = []
         #query all courses order by id in descending order
         courses = Course.query.order_by(Course.id.desc()).all()
         if not courses:
             # Return an empty list if there are no courses
             return data
+        
+        
 
         for course in courses:
+            
             Time_table = []
             for timetable in course.time_table:
-                Time_table.append({
-                    "id": timetable.id,
-                    "day": timetable.day,
-                    "start_time": timetable.start_time,
-                    "end_time": timetable.end_time,
-                    "course_id": timetable.course_id,
-                    "limit": timetable.limit
-                })
+                #if courese.time_table is not exist in StudentTimeTable then show the course
+                student_time_table = StudentTimeTable.query.filter_by(course_id=course.id, student_id=id, day=timetable.day, start_time=timetable.start_time,end_time=timetable.end_time).first()
+                if student_time_table is None:
+                    Time_table.append({
+                        "id": timetable.id,
+                        "day": timetable.day,
+                        "start_time": timetable.start_time,
+                        "end_time": timetable.end_time,
+                        "course_id": timetable.course_id,
+                        "limit": timetable.limit
+                    })
             data.append({
                 "id": course.id,
                 "name": course.name,
@@ -469,6 +485,91 @@ class UserProfileAPI(Resource):
         return data
     
 
+#==============================Student Time Table API========================================
+class StudentTimeTableAPI(Resource):
+    def get(self,id):
+        data = []
+        #query all student time tables filter by student id order by id in descending order
+        student_time_tables = StudentTimeTable.query.filter_by(student_id=id).order_by(StudentTimeTable.id.desc()).all()
+        if not student_time_tables:
+            # Return an empty list if there are no student time tables
+            return data
+
+        for student_time_table in student_time_tables:
+            course = Course.query.get(student_time_table.course_id)
+            data.append({
+                "id": student_time_table.id,
+                "day": student_time_table.day,
+                "start_time": student_time_table.start_time,
+                "end_time": student_time_table.end_time,
+                "course_id": student_time_table.course_id,
+                "student_id": student_time_table.student_id,
+                "course_name": course.name,
+                "faculty_name": course.faculty_name
+            })
+
+        return data
+    
+    @marshal_with(student_time_table_fields)
+    def post(self):
+        args = create_timetable_parser.parse_args()
+        day = args.get('day', None)
+        start_time = args.get('start_time', None)
+        end_time = args.get('end_time', None)
+        course_id = args.get('course_id', None)
+        student_id = args.get('student_id', None)
+
+        if not day:
+            raise BusinessValidationError(status_code=400,error_code="BE1001",error_message="Day is required")
+        if not start_time:
+            raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Start Time is required")
+        if not end_time:
+            raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="End Time is required")
+        if not course_id:
+            raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Course ID is required")
+        if not student_id:
+            raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Student ID is required")
+        
+        #check if the student is already registered for the course timetable
+        student_time_table = StudentTimeTable.query.filter_by(day=day, start_time=start_time, end_time=end_time, course_id=course_id, student_id=student_id).first()
+        if student_time_table:
+            raise BusinessValidationError(status_code=400,error_code="BE1003",error_message="You are already enrolled for this course slot. Please choose another slot.")
+            
+        student_time_table = StudentTimeTable(day=day, start_time=start_time, end_time=end_time, course_id=course_id, student_id=student_id)
+        db.session.add(student_time_table)
+        db.session.commit()
+        return student_time_table, 201
+    
+    @marshal_with(student_time_table_fields)
+    def put(self, id):
+        args = update_timetable_parser.parse_args()
+        day = args.get('day', None)
+        start_time = args.get('start_time', None)
+        end_time = args.get('end_time', None)
+        course = args.get('course_id', None)
+        student_id = args.get('student_id', None)
+
+        student_time_table = StudentTimeTable.query.get(id)
+
+        if not student_time_table:
+            raise NotFoundError(status_code=404)
+        
+        if day:
+            student_time_table.day = day
+        if start_time:
+            student_time_table.start_time = start_time
+        if end_time:
+            student_time_table.end_time = end_time
+        if course:
+            student_time_table.course_id = course
+        if student_id:
+            student_time_table.student_id = student_id
+
+        db.session.commit()
+        return student_time_table, 200
+
+
+
     
 
 #==============================API Endpoints========================================
@@ -476,7 +577,8 @@ api.add_resource(FacultyCourseAPI, '/course/<name>', '/course/<int:id>', '/cours
 api.add_resource(TimeTableAPI, '/timetable', '/timetable/<int:id>')
 api.add_resource(TasksAPI, '/tasks', '/tasks/<int:id>')
 api.add_resource(UserProfileAPI, '/user-profile/<int:id>')
-api.add_resource(StudentCourseAPI, '/courses')
+api.add_resource(StudentCourseAPI, '/courses/<int:id>')
+api.add_resource(StudentTimeTableAPI, '/student-timetable', '/student-timetable/<int:id>')
 
 
        

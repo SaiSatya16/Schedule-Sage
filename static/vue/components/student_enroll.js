@@ -53,7 +53,7 @@ const Studentenroll = Vue.component("studentenroll", {
 
                         <span class="mx-1">|</span>
 
-                        <button type="button" class="btn btn-sm btn-outline-primary">
+                        <button @click="enroll(timetable)" type="button" class="btn btn-sm btn-outline-primary">
                         Enroll
              </button>
 
@@ -77,13 +77,15 @@ const Studentenroll = Vue.component("studentenroll", {
             userRole: localStorage.getItem('role'),
             token: localStorage.getItem('auth-token'),
             username: localStorage.getItem('username'),
+            student_id: localStorage.getItem('id'),
             courses: [],
+            error: null,
         };
     },
 
     methods : {
         async getcourses() {
-            const res = await fetch("/courses", {
+            const res = await fetch("/courses/"+this.student_id, {
                 method: "GET",
                 headers: {
                 "Content-Type": "application/json",
@@ -101,6 +103,36 @@ const Studentenroll = Vue.component("studentenroll", {
                 this.error = data.error_message;
             }
         },
+
+        async enroll(timetable) {
+            const res = await fetch("/student-timetable", {
+                method: "POST",
+                headers: {
+                "Content-Type": "application/json",
+                "Authentication-Token": this.token,
+                "Authentication-Role": this.userRole,
+                },
+                body: JSON.stringify({
+                day: timetable.day,
+                start_time: timetable.start_time,
+                end_time: timetable.end_time,
+                course_id: timetable.course_id,
+                student_id: this.student_id,
+                }),
+            });
+            if (res.ok) {
+                const data = await res.json();
+                console.log(data);
+                alert("Enrolled successfully");
+                this.getcourses();
+            } else {
+                const data = await res.json();
+                console.log(data);
+                this.error = data.error_message;
+                alert(data.error_message);
+            }
+        },
+
 
         formatScheduleDate(dateString) {
             // Convert the date string to a Date object
@@ -147,8 +179,9 @@ const Studentenroll = Vue.component("studentenroll", {
               });
           });
   
-          // Include courses without schedules
-          return upcomingCourses;
+          // Remove courses with no upcoming schedules
+          return upcomingCourses.filter(course => course.time_table.length > 0);
+
       },
     },
 
@@ -156,9 +189,9 @@ const Studentenroll = Vue.component("studentenroll", {
 
 
     mounted() {
-        this.getcourses();
-        document.title = "Enroll";
-    }
+      this.getcourses();
+      document.title = "Enroll";
+  }
 
 
 

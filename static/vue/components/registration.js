@@ -1,4 +1,4 @@
-// Assuming you already have Vue imported and set up
+
 
 const Registration = Vue.component('registration', {
     template: `<div class="container">
