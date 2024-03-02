@@ -1,19 +1,25 @@
 const Studenthome = Vue.component("studenthome", {
-    template: `
-        <div class="container mt-4">
+  template: `
+  <div class="main-container pb-5">
+        <div class="container">
             <div class="row">
                 <div class="col-lg-8 offset-lg-2">
                     <div class="mt-4">
-                        <h2>Today's Schedule</h2>
+                    <div class="d-flex flex-row align-items-center">
+                        <div>
+                            <h2>Today's Schedule</h2>
+                        </div>
+                        <div class="pulser"></div>
+                    </div>
                         <div v-if="todayTimetable.length === 0">
                             <p>No schedule for today.</p>
                         </div>
                         <div v-else>
                             <ul class="list-group">
-                                <li class="list-group-item" v-for="schedule in todayTimetable" :key="schedule.id">
+                                <li class="rlist-group-item p-3 mb-1" v-for="schedule in todayTimetable" :key="schedule.id">
                                     <h5>{{ schedule.course_name }}</h5>
                                     <p class="mb-1">by <span class="badge bg-secondary">{{ schedule.faculty_name }}</span></p>
-                                    <p>
+                                    <p class="schedule-time">
                                         <i class="fas fa-clock fa-lg text-center" style="font-size: 1.0rem"></i>
                                         {{ schedule.start_time }}
                                         <span class="mx-1">To</span>
@@ -30,7 +36,7 @@ const Studenthome = Vue.component("studenthome", {
                             <p>No upcoming schedules.</p>
                         </div>
                         <div v-else>
-                            <ul class="list-group">
+                            <ul class="list-group ">
                                 <li class="list-group-item" v-for="schedule in upcomingTimetable" :key="schedule.id">
                                     <h5>{{ schedule.course_name }}</h5>
                                     <p class="mb-1">by <span class="badge bg-secondary">{{ schedule.faculty_name }}</span></p>
@@ -50,72 +56,85 @@ const Studenthome = Vue.component("studenthome", {
                 </div>
             </div>
         </div>
+    <div class="main-container pb-5">
     `,
-    data() {
-        return {
-            userRole: localStorage.getItem('role'),
-            token: localStorage.getItem('auth-token'),
-            username: localStorage.getItem('username'),
-            student_id: localStorage.getItem('id'),
-            error: null,
-            timetable: [],
-        };
-    },
-    computed: {
-        todayTimetable() {
-            // Get the current day
-            const currentDay = new Date().getDay();
+  data() {
+    return {
+      userRole: localStorage.getItem("role"),
+      token: localStorage.getItem("auth-token"),
+      username: localStorage.getItem("username"),
+      student_id: localStorage.getItem("id"),
+      error: null,
+      timetable: [],
+    };
+  },
+  computed: {
+    todayTimetable() {
+      // Get the current day
+      const currentDay = new Date().getDay();
 
-            // Filter the timetable for today
-            return this.timetable.filter(schedule => {
-                const scheduleDay = new Date(schedule.day).getDay();
-                return scheduleDay === currentDay;
-            });
-        },
-        upcomingTimetable() {
-            // Get the current date
-            const currentDate = new Date();
+      // Filter the timetable for today
+      return this.timetable.filter((schedule) => {
+        const scheduleDay = new Date(schedule.day).getDay();
+        return scheduleDay === currentDay;
+      });
+    },
+    upcomingTimetable() {
+      // Get the current date
+      const currentDate = new Date();
 
-            // Filter the timetable for upcoming schedules
-            return this.timetable.filter(schedule => {
-                const scheduleDate = new Date(schedule.day);
-                return scheduleDate > currentDate;
-            });
-        },
+      // Filter the timetable for upcoming schedules
+      return this.timetable.filter((schedule) => {
+        const scheduleDate = new Date(schedule.day);
+        return scheduleDate > currentDate;
+      });
     },
-    methods: {
-        async getstudenttimetable() {
-            const res = await fetch("/student-timetable/" + this.student_id, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authentication-Token": this.token,
-                    "Authentication-Role": this.userRole,
-                },
-            });
-            if (res.ok) {
-                const data = await res.json();
-                console.log(data);
-                this.timetable = data;
-            } else {
-                const data = await res.json();
-                console.log(data);
-                this.error = data.error_message;
-                alert(data.error_message);
-            }
+  },
+  methods: {
+    async getstudenttimetable() {
+      const res = await fetch("/student-timetable/" + this.student_id, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authentication-Token": this.token,
+          "Authentication-Role": this.userRole,
         },
-        formatScheduleDate(dateString) {
-            const date = new Date(dateString);
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            const dayName = days[date.getDay()];
-            const formattedDate = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
-            return `${formattedDate} (${dayName})`;
-        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log(data);
+        this.timetable = data;
+      } else {
+        const data = await res.json();
+        console.log(data);
+        this.error = data.error_message;
+        alert(data.error_message);
+      }
     },
-    mounted() {
-        this.getstudenttimetable();
-        document.title = "Home";
+    formatScheduleDate(dateString) {
+      const date = new Date(dateString);
+      const days = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
+      const dayName = days[date.getDay()];
+      const formattedDate = `${date.getDate().toString().padStart(2, "0")}-${(
+        date.getMonth() + 1
+      )
+        .toString()
+        .padStart(2, "0")}-${date.getFullYear()}`;
+      return `${formattedDate} (${dayName})`;
     },
+  },
+  mounted() {
+    this.getstudenttimetable();
+    document.title = "Home";
+  },
 });
 
 export default Studenthome;

@@ -193,10 +193,13 @@ svg:hover span {
 }
 
 .form-container {
-  background-color: rgba(0, 0, 0, 0.2);
-  box-shadow: 10px 10px 20px 0px rgba(0, 0, 0, 0.75);
-  height: 100%;
-  border-radius: 20px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.4);
+  padding: 40px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px #000;
+  width: 500px;
+  height: 430px;
 }
 
 .login-input {
@@ -335,6 +338,45 @@ svg:hover span {
 }
 
 /*navbar.js*/
+.navbar-container {
+  background-color: #f8f9fa;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+.pulser {
+  width: 20px;
+  height: 20px;
+  background: red;
+  border-radius: 50%;
+  position: relative;
+  margin-left: 10px;
+}
+
+.pulser::after {
+  animation: pulse 1000ms cubic-bezier(0.9, 0.7, 0.5, 0.9) infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.4;
+  }
+}
+
+.pulser::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: darkred;
+  border-radius: 50%;
+  z-index: -1;
+}
 
 /*faculty_home.js*/
 .fac-home-container {
@@ -388,4 +430,9 @@ svg:hover span {
   border-radius: 10px;
   border: red solid;
   border-width: 1px;
+}
+
+/*student_home.js*/
+.schedule-time {
+  font-family: "Roboto";
 }

@@ -1,219 +1,225 @@
 const Facultyhome = Vue.component("facultyhome", {
   template: `
 
-    <div class="main-container pb-5">
-    <div class="container">
-   <div class="row">
-      <div class="col-lg-8 offset-lg-2">
-         <!-- Welcome Message -->
-         <div class="jumbotron pt-3 pb-3">
-            <h1 class="display-4 greeting">Welcome, {{username}}!</h1>
-            <p class="scope">You can Add, delete, edit courses.</p>
-            <button type="button" class="add-course-btn" data-bs-toggle="modal" data-bs-target="#addCourseModal">
-            Add Course
-            <i class="fa fa-plus" aria-hidden="true"></i>
-            </button>
-         </div>
-         <div class="alert alert-danger" v-if="error">
-            {{ error }}
-         </div>
-         <div v-if="courses.length == 0">
-            <h2>No Courses Found</h2>
-         </div>
-         <div v-else>
-            <!-- List of Courses -->
-            <h2>List of Courses</h2>
-            <div v-for="course in upcomingCourses" :key="course.id" >
-               <div class="list-group mb-2">
-                  <div class="list-container p-3">
-                     <h3 class="mb-1">{{ course.name }}</h3>
-                     <p class="mb-1">by <span class="badge bg-secondary">{{ course.faculty_name }}</span></p>
-                     <p class="mb-1">{{ course.description }}</p>
-                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" :data-bs-target="'#schedule' + course.id" aria-expanded="false" aria-controls="'schedule' + course.id">
-                        View Schedule
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-primary" :data-bs-target="'#addScheduleModal' + course.id" data-bs-toggle="modal">
-                        Add Schedule
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-secondary" :data-bs-target="'#editModal' + course.id" data-bs-toggle="modal">
-                        Edit
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-danger" @click="deleteCourse(course.id)">
-                        Delete
-                        </button>
-                     </div>
-                     <div class="collapse mt-2" :id="'schedule' + course.id">
-                        <ul class="list-group">
-                           <li class="elist-group-item mb-1 p-3" v-for="timetable in course.time_table">
-                              <h5>{{ formatScheduleDate(timetable.day) }}</h5>
-                              <p>
-                                 <i class="fas fa-clock fa-lg text-center" style="font-size: 1.0rem"></i>
-                                 {{ timetable.start_time }} 
-                                 <span class="mx-1">To</span> 
-                                 {{ timetable.end_time }} 
-                                 <span class="mx-1">|</span>
-                                 <i class="fas fa-user fa-lg text-center" style="font-size: 1.0rem"></i>
-                                 {{ timetable.limit }}
-                                 <span class="mx-1">|</span>
-                                 <i class="fas fa-users fa-lg text-center" style="font-size: 1.0rem"></i>
-                                 50/{{ timetable.limit }}
-                              <div class="btn-group" role="group">
-                                 <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" :data-bs-target="'#editScheduleModal' + timetable.id">
-                                 Edit
-                                 </button>
-                                 <button type="button" class="btn btn-sm btn-outline-danger" @click="deleteSchedule(timetable.id)">
-                                 Delete
-                                 </button>
-                              </div>
-                              </p>
-                           </li>
-                        </ul>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <div class="mt-4">
-            <h2>Today's Schedule</h2>
-            <div v-if="currentDaySchedule.length === 0">
-               <p>No schedule for today.</p>
-            </div>
-            <div v-else>
-               <ul class="list-group">
-                  <li class="rlist-group-item p-3 mb-1" v-for="schedule in currentDaySchedule" :key="schedule.id">
-                     <h5>{{ schedule.course_name }}</h5>
-                     <p>
-                        <i class="fas fa-clock fa-lg text-center" style="font-size: 1.0rem"></i>
-                        {{ schedule.start_time }} 
-                        <span class="mx-1">To</span> 
-                        {{ schedule.end_time }}
-                        <span class="mx-1">|</span>
-                        <i class="fas fa-calendar fa-lg text-center" style="font-size: 1.0rem"></i>
-                        {{ formatScheduleDate(schedule.day) }}
-                     </p>
-                  </li>
-               </ul>
-            </div>
-         </div>
-      </div>
-   </div>
-   <div v-for="course in courses" :key="course.id">
-      <div class="modal fade" :id="'editModal' + course.id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" :aria-labelledby="'editModalLabel' + course.id" aria-hidden="true">
-         <div class="modal-dialog">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <h1 class="modal-title fs-5" :id="'editModal' + course.id">Edit Course</h1>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-               </div>
-               <div class="modal-body">
-                  <div class="my-3">
-                     <label for="courseName">Enter Course Name</label>
-                     <input v-model="course.name" type="text" id="courseName" class="form-control" :placeholder="course.name">
-                  </div>
-                  <div class="my-3">
-                     <label for="courseDescription">Enter Course Description</label>
-                     <textarea v-model="course.description" class="form-control"></textarea>
-                  </div>
-               </div>
-               <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="button" @click="editCourse(course)" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
-               </div>
-            </div>
-         </div>
-      </div>
-   </div>
-   <div class="modal fade" id="addCourseModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addCourseModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-         <div class="modal-content">
-            <div class="modal-header">
-               <h1 class="modal-title fs-5" id="addCourseModalLabel">Add Course</h1>
-               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-               <div class="my-3">
-                  <label for="newCourseName">Enter Course Name</label>
-                  <input v-model="Coursename" type="text" id="newCourseName" class="form-control" placeholder="Course Name">
-               </div>
-               <div class="my-3">
-                  <label for="newCourseDescription">Enter Course Description</label>
-                  <textarea v-model="Course_description" class="form-control"></textarea>
-               </div>
-            </div>
-            <div class="modal-footer">
-               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-               <button type="button" @click="addCourse" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
-            </div>
-         </div>
-      </div>
-   </div>
-   <div v-for="course in upcomingCourses" class="modal fade" :id="'addScheduleModal' + course.id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" :aria-labelledby="'addScheduleModalLabel' + course.id" aria-hidden="true">
-      <div class="modal-dialog">
-         <div class="modal-content">
-            <div class="modal-header">
-               <h1 class="modal-title fs-5" :id="'addScheduleModalLabel' + course.id">Add Schedule</h1>
-               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-               <div class="my-3">
-                  <label for="scheduleDate">Enter Date</label>
-                  <input v-model="scheduleDate" type="date" id="scheduleDate" class="form-control">
-               </div>
-               <div class="my-3">
-                  <label for="startTime">Enter Start Time</label>
-                  <input v-model="startTime" type="time" id="startTime" class="form-control">
-               </div>
-               <div class="my-3">
-                  <label for="endTime">Enter End Time</label>
-                  <input v-model="endTime" type="time" id="endTime" class="form-control">
-               </div>
-               <div class="my-3">
-                  <label for="studentLimit">Enter Student Limit</label>
-                  <input v-model="studentLimit" type="number" id="studentLimit" class="form-control">
-               </div>
-            </div>
-            <div class="modal-footer">
-               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-               <button type="button" @click="addSchedule(course.id)" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
-            </div>
-         </div>
-      </div>
-   </div>
-   <div v-for="course in upcomingCourses" :key="course.id">
-      <div v-for="timetable in course.time_table" :key="timetable.id" class="modal fade" :id="'editScheduleModal' + timetable.id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" :aria-labelledby="'editScheduleModalLabel' + timetable.id" aria-hidden="true">
-         <div class="modal-dialog">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <h1 class="modal-title fs-5" :id="'editScheduleModalLabel' + timetable.id">Edit Schedule</h1>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-               </div>
-               <div class="modal-body">
-                  <div class="my-3">
-                     <label for="editScheduleDate">Enter Date</label>
-                     <input v-model="timetable.day" type="date" id="editScheduleDate" class="form-control">
-                  </div>
-                  <div class="my-3">
-                     <label for="editStartTime">Enter Start Time</label>
-                     <input v-model="timetable.start_time" type="time" id="editStartTime" class="form-control">
-                  </div>
-                  <div class="my-3">
-                     <label for="editEndTime">Enter End Time</label>
-                     <input v-model="timetable.end_time" type="time" id="editEndTime" class="form-control">
-                  </div>
-                  <div class="my-3">
-                     <label for="editStudentLimit">Enter Student Limit</label>
-                     <input v-model="timetable.limit" type="number" id="editStudentLimit" class="form-control">
-                  </div>
-               </div>
-               <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="button" @click="editSchedule(timetable)" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
-               </div>
-            </div>
-         </div>
-      </div>
-   </div>
+  <div class="main-container pb-5">
+  <div class="container">
+     <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+           <!-- Welcome Message -->
+           <div class="jumbotron pt-3 pb-3">
+              <h1 class="display-4 greeting">Welcome, {{username}}!</h1>
+              <p class="scope">You can Add, delete, edit courses.</p>
+              <button type="button" class="add-course-btn" data-bs-toggle="modal" data-bs-target="#addCourseModal">
+              Add Course
+              <i class="fa fa-plus" aria-hidden="true"></i>
+              </button>
+           </div>
+           <div class="alert alert-danger" v-if="error">
+              {{ error }}
+           </div>
+           <div v-if="courses.length == 0">
+              <h2>No Courses Found</h2>
+           </div>
+           <div v-else>
+              <!-- List of Courses -->
+              <h2>List of Courses</h2>
+              <div v-for="course in upcomingCourses" :key="course.id" >
+                 <div class="list-group mb-2">
+                    <div class="list-container p-3">
+                       <h3 class="mb-1">{{ course.name }}</h3>
+                       <p class="mb-1">by <span class="badge bg-secondary">{{ course.faculty_name }}</span></p>
+                       <p class="mb-1">{{ course.description }}</p>
+                       <div class="btn-group" role="group">
+                          <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" :data-bs-target="'#schedule' + course.id" aria-expanded="false" aria-controls="'schedule' + course.id">
+                          View Schedule
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-primary" :data-bs-target="'#addScheduleModal' + course.id" data-bs-toggle="modal">
+                          Add Schedule
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-secondary" :data-bs-target="'#editModal' + course.id" data-bs-toggle="modal">
+                          Edit
+                          </button>
+                          <button type="button" class="btn btn-sm btn-outline-danger" @click="deleteCourse(course.id)">
+                          Delete
+                          </button>
+                       </div>
+                       <div class="collapse mt-2" :id="'schedule' + course.id">
+                          <ul class="list-group">
+                             <li class="elist-group-item mb-1 p-3" v-for="timetable in course.time_table">
+                                <h5>{{ formatScheduleDate(timetable.day) }}</h5>
+                                <p>
+                                   <i class="fas fa-clock fa-lg text-center" style="font-size: 1.0rem"></i>
+                                   {{ timetable.start_time }} 
+                                   <span class="mx-1">To</span> 
+                                   {{ timetable.end_time }} 
+                                   <span class="mx-1">|</span>
+                                   <i class="fas fa-user fa-lg text-center" style="font-size: 1.0rem"></i>
+                                   {{ timetable.limit }}
+                                   <span class="mx-1">|</span>
+                                   <i class="fas fa-users fa-lg text-center" style="font-size: 1.0rem"></i>
+                                   50/{{ timetable.limit }}
+                                <div class="btn-group" role="group">
+                                   <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" :data-bs-target="'#editScheduleModal' + timetable.id">
+                                   Edit
+                                   </button>
+                                   <button type="button" class="btn btn-sm btn-outline-danger" @click="deleteSchedule(timetable.id)">
+                                   Delete
+                                   </button>
+                                </div>
+                                </p>
+                             </li>
+                          </ul>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           </div>
+           <div class="mt-4">
+              <div class="d-flex flex-row align-items-center">
+                 <div>
+                    <h2>Today's Schedule</h2>
+                 </div>
+                 <div class="pulser"></div>
+              </div>
+           </div>
+           <div v-if="currentDaySchedule.length === 0">
+              <p>No schedule for today.</p>
+           </div>
+           <div v-else>
+              <ul class="list-group">
+                 <li class="rlist-group-item p-3 mb-1" v-for="schedule in currentDaySchedule" :key="schedule.id">
+                    <h5>{{ schedule.course_name }}</h5>
+                    <p>
+                       <i class="fas fa-clock fa-lg text-center" style="font-size: 1.0rem"></i>
+                       {{ schedule.start_time }} 
+                       <span class="mx-1">To</span> 
+                       {{ schedule.end_time }}
+                       <span class="mx-1">|</span>
+                       <i class="fas fa-calendar fa-lg text-center" style="font-size: 1.0rem"></i>
+                       {{ formatScheduleDate(schedule.day) }}
+                    </p>
+                 </li>
+              </ul>
+           </div>
+        </div>
+     </div>
+  </div>
+  <div v-for="course in courses" :key="course.id">
+     <div class="modal fade" :id="'editModal' + course.id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" :aria-labelledby="'editModalLabel' + course.id" aria-hidden="true">
+        <div class="modal-dialog">
+           <div class="modal-content">
+              <div class="modal-header">
+                 <h1 class="modal-title fs-5" :id="'editModal' + course.id">Edit Course</h1>
+                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                 <div class="my-3">
+                    <label for="courseName">Enter Course Name</label>
+                    <input v-model="course.name" type="text" id="courseName" class="form-control" :placeholder="course.name">
+                 </div>
+                 <div class="my-3">
+                    <label for="courseDescription">Enter Course Description</label>
+                    <textarea v-model="course.description" class="form-control"></textarea>
+                 </div>
+              </div>
+              <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                 <button type="button" @click="editCourse(course)" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+              </div>
+           </div>
+        </div>
+     </div>
+  </div>
+  <div class="modal fade" id="addCourseModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addCourseModalLabel" aria-hidden="true">
+     <div class="modal-dialog">
+        <div class="modal-content">
+           <div class="modal-header">
+              <h1 class="modal-title fs-5" id="addCourseModalLabel">Add Course</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+           </div>
+           <div class="modal-body">
+              <div class="my-3">
+                 <label for="newCourseName">Enter Course Name</label>
+                 <input v-model="Coursename" type="text" id="newCourseName" class="form-control" placeholder="Course Name">
+              </div>
+              <div class="my-3">
+                 <label for="newCourseDescription">Enter Course Description</label>
+                 <textarea v-model="Course_description" class="form-control"></textarea>
+              </div>
+           </div>
+           <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" @click="addCourse" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+           </div>
+        </div>
+     </div>
+  </div>
+  <div v-for="course in upcomingCourses" class="modal fade" :id="'addScheduleModal' + course.id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" :aria-labelledby="'addScheduleModalLabel' + course.id" aria-hidden="true">
+     <div class="modal-dialog">
+        <div class="modal-content">
+           <div class="modal-header">
+              <h1 class="modal-title fs-5" :id="'addScheduleModalLabel' + course.id">Add Schedule</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+           </div>
+           <div class="modal-body">
+              <div class="my-3">
+                 <label for="scheduleDate">Enter Date</label>
+                 <input v-model="scheduleDate" type="date" id="scheduleDate" class="form-control">
+              </div>
+              <div class="my-3">
+                 <label for="startTime">Enter Start Time</label>
+                 <input v-model="startTime" type="time" id="startTime" class="form-control">
+              </div>
+              <div class="my-3">
+                 <label for="endTime">Enter End Time</label>
+                 <input v-model="endTime" type="time" id="endTime" class="form-control">
+              </div>
+              <div class="my-3">
+                 <label for="studentLimit">Enter Student Limit</label>
+                 <input v-model="studentLimit" type="number" id="studentLimit" class="form-control">
+              </div>
+           </div>
+           <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" @click="addSchedule(course.id)" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+           </div>
+        </div>
+     </div>
+  </div>
+  <div v-for="course in upcomingCourses" :key="course.id">
+     <div v-for="timetable in course.time_table" :key="timetable.id" class="modal fade" :id="'editScheduleModal' + timetable.id" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" :aria-labelledby="'editScheduleModalLabel' + timetable.id" aria-hidden="true">
+        <div class="modal-dialog">
+           <div class="modal-content">
+              <div class="modal-header">
+                 <h1 class="modal-title fs-5" :id="'editScheduleModalLabel' + timetable.id">Edit Schedule</h1>
+                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                 <div class="my-3">
+                    <label for="editScheduleDate">Enter Date</label>
+                    <input v-model="timetable.day" type="date" id="editScheduleDate" class="form-control">
+                 </div>
+                 <div class="my-3">
+                    <label for="editStartTime">Enter Start Time</label>
+                    <input v-model="timetable.start_time" type="time" id="editStartTime" class="form-control">
+                 </div>
+                 <div class="my-3">
+                    <label for="editEndTime">Enter End Time</label>
+                    <input v-model="timetable.end_time" type="time" id="editEndTime" class="form-control">
+                 </div>
+                 <div class="my-3">
+                    <label for="editStudentLimit">Enter Student Limit</label>
+                    <input v-model="timetable.limit" type="number" id="editStudentLimit" class="form-control">
+                 </div>
+              </div>
+              <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                 <button type="button" @click="editSchedule(timetable)" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+              </div>
+           </div>
+        </div>
+     </div>
+  </div>
 </div>
 </div>
     
