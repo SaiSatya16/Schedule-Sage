@@ -44,8 +44,18 @@ class Course(db.Model):
     faculty_name = db.Column(db.String, nullable=False)
     # assignments = db.relationship('Assignment', backref='course', lazy='dynamic')
 
+class ClassRoom(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    description = db.Column(db.String)
 
-
+class ClassRoomSlots(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    day = db.Column(db.String, nullable=False)
+    start_time = db.Column(db.String, nullable=False)
+    end_time = db.Column(db.String, nullable=False)
+    slot_name = db.Column(db.String, nullable=False)
+    
 class TimeTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     day = db.Column(db.String, nullable=False)
@@ -53,6 +63,10 @@ class TimeTable(db.Model):
     end_time = db.Column(db.String, nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
     limit = db.Column(db.Integer, nullable=False)
+    room = db.Column(db.String, nullable=False)
+    current_count = db.Column(db.Integer, nullable=False)
+    slot_name = db.Column(db.String, nullable=False)
+
 
 class StudentTimeTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)

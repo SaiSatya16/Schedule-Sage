@@ -56,8 +56,13 @@ const Facultyhome = Vue.component("facultyhome", {
                                  <i class="fas fa-user fa-lg text-center" style="font-size: 1.0rem"></i>
                                  {{ timetable.limit }}
                                  <span class="mx-1">|</span>
-                                 <i class="fas fa-users fa-lg text-center" style="font-size: 1.0rem"></i>
-                                 50/{{ timetable.limit }}
+                        
+                                  <i class="fas fa-door-open fa-lg text-center" style="font-size: 1.0rem"></i>
+                                  {{ timetable.room }}
+                                  <span class="mx-1">|</span>
+                                  <i class="fas fa-users fa-lg text-center" style="font-size: 1.0rem"></i>
+                                  {{ timetable.current_count }}/{{ timetable.limit }}
+                                  <p>
                               <div class="btn-group" role="group">
                                  <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" :data-bs-target="'#editScheduleModal' + timetable.id">
                                  Edit
@@ -156,22 +161,24 @@ const Facultyhome = Vue.component("facultyhome", {
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-               <div class="my-3">
-                  <label for="scheduleDate">Enter Date</label>
-                  <input v-model="scheduleDate" type="date" id="scheduleDate" class="form-control">
-               </div>
-               <div class="my-3">
-                  <label for="startTime">Enter Start Time</label>
-                  <input v-model="startTime" type="time" id="startTime" class="form-control">
-               </div>
-               <div class="my-3">
-                  <label for="endTime">Enter End Time</label>
-                  <input v-model="endTime" type="time" id="endTime" class="form-control">
-               </div>
+              <div class="my-3">
+                  <label for="Slot">SelectSlot</label>
+                  <select v-model="Slot" class="form-select" id="Slot">
+                    <option v-for="slot in classroomslots" :key="slot.id" :value="slot.slot_name">{{ slot.slot_name }}</option>
+                  </select>
+                </div>
                <div class="my-3">
                   <label for="studentLimit">Enter Student Limit</label>
                   <input v-model="studentLimit" type="number" id="studentLimit" class="form-control">
                </div>
+               <div class="my-3">
+               <label for="room">Enter Room No.</label>
+                <select v-model="room" class="form-select" id="room">
+                  <option v-for="room in rooms" :key="room.id" :value="room.name">{{ room.name }}</option>
+                </select>
+
+            </div>
+
             </div>
             <div class="modal-footer">
                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -189,22 +196,21 @@ const Facultyhome = Vue.component("facultyhome", {
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                </div>
                <div class="modal-body">
-                  <div class="my-3">
-                     <label for="editScheduleDate">Enter Date</label>
-                     <input v-model="timetable.day" type="date" id="editScheduleDate" class="form-control">
-                  </div>
-                  <div class="my-3">
-                     <label for="editStartTime">Enter Start Time</label>
-                     <input v-model="timetable.start_time" type="time" id="editStartTime" class="form-control">
-                  </div>
-                  <div class="my-3">
-                     <label for="editEndTime">Enter End Time</label>
-                     <input v-model="timetable.end_time" type="time" id="editEndTime" class="form-control">
-                  </div>
+               <div class="my-3">
+                  <label for="Slot">SelectSlot</label>
+                  <select v-model="timetable.slot_name" class="form-select" id="Slot">
+                    <option v-for="slot in classroomslots" :key="slot.id" :value="slot.slot_name">{{ slot.slot_name }}</option>
+                  </select>
+                </div>
                   <div class="my-3">
                      <label for="editStudentLimit">Enter Student Limit</label>
                      <input v-model="timetable.limit" type="number" id="editStudentLimit" class="form-control">
                   </div>
+                  <div class="my-3">
+                  <label for="editRoom">Enter Room No.</label>
+                  <select v-model="timetable.room" class="form-select" id="editRoom">
+                    <option v-for="room in rooms" :key="room.id" :value="room.name">{{ room.name }}</option>
+                  </select>
                </div>
                <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -228,10 +234,11 @@ const Facultyhome = Vue.component("facultyhome", {
       userRole: localStorage.getItem("role"),
       token: localStorage.getItem("auth-token"),
       username: localStorage.getItem("username"),
-      scheduleDate: null,
-      startTime: null,
-      endTime: null,
       studentLimit: null,
+      room: null,
+      rooms : [],
+      classroomslots : [],
+      Slot : null,
     };
   },
 
@@ -333,10 +340,10 @@ const Facultyhome = Vue.component("facultyhome", {
         },
         body: JSON.stringify({
           course_id: courseId,
-          day: this.scheduleDate,
-          start_time: this.startTime,
-          end_time: this.endTime,
           limit: this.studentLimit,
+          room: this.room,
+          slot: this.Slot,
+          current_count: 0,
         }),
       });
       if (res.ok) {
@@ -351,6 +358,7 @@ const Facultyhome = Vue.component("facultyhome", {
     },
 
     async editSchedule(timetable) {
+      console.log(timetable.slot_name);
       const res = await fetch("/timetable/" + timetable.id, {
         method: "PUT",
         headers: {
@@ -359,10 +367,9 @@ const Facultyhome = Vue.component("facultyhome", {
           "Authentication-Role": this.userRole,
         },
         body: JSON.stringify({
-          day: timetable.day,
-          start_time: timetable.start_time,
-          end_time: timetable.end_time,
+          room: timetable.room,
           limit: timetable.limit,
+          slot: timetable.slot_name,
         }),
       });
       if (res.ok) {
@@ -420,6 +427,51 @@ const Facultyhome = Vue.component("facultyhome", {
       // Return the formatted date with day name
       return `${formattedDate} (${dayName})`;
     },
+
+    async getrooms() {
+      const res = await fetch("/class-room", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authentication-Token": this.token,
+          "Authentication-Role": this.userRole,
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log(data);
+        this.rooms = data;
+      } else {
+        const data = await res.json();
+        console.log(data);
+        this.error = data.error_message;
+      }
+    },
+
+    async getclassroomslots() {
+      const res = await fetch("/class-room-slots",
+      {
+          method: "GET",
+          headers: {
+              "Content-Type": "application/json",
+              "Authentication-Token": this.token,
+              "Authentication-Role": this.userRole,
+          },
+      });
+      if (res.ok) {
+          const data = await res.json();
+          console.log(data);
+          this.classroomslots = data;
+      } else {
+          const data = await res.json();
+          console.log(data);
+          this.error = data.error_message;
+      }
+  },
+
+
+
+
   },
   computed: {
     upcomingCourses() {
@@ -470,9 +522,15 @@ const Facultyhome = Vue.component("facultyhome", {
       // Sort the schedules by time
       return schedules.sort((a, b) => a.start_time.localeCompare(b.start_time));
     },
+
+    
+
+
   },
   mounted() {
     this.getcourses();
+    this.getrooms();
+    this.getclassroomslots();
     document.title = "Faculty Home";
   },
 });
