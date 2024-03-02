@@ -1,16 +1,53 @@
 const Navbar = Vue.component('Navbar', {
-    template: `<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    template: `
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top mb-2 border-bottom">
+    <div class="container">
     <a class="navbar-brand" href="/" > Scheduling-App </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <button class="nav-item nav-link active d-lg-block" ><router-link class="nav-item nav-link active d-lg-block" to="/">Home</router-link></button>
-        <button class="nav-item nav-link active d-lg-block" ><router-link class="nav-item nav-link active d-lg-block" to="/about">About Us</router-link></button>
-        <button class="nav-item nav-link active d-lg-block"  v-if="['Student'].includes(role)"><router-link class="nav-item nav-link active d-lg-block" to="/studentenroll">Enroll</router-link></button>
-          <button class="nav-link" @click='logout'>Logout</button>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <ul class="navbar-nav ms-auto">
+
+
+
+        <!-- Home -->
+        <li class="nav-item active">
+        <a class="nav-link" href="/#/" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+          <i class="fas fa-home fa-lg text-center" style="color: black"></i>
+          <div class="menutext mt-2" style="color: black">  <router-link class="menutext mt-2" to="/">Home</router-link></div>
         </a>
+      </li>
+      
+      
+      <!-- About Us -->
+      <li class="nav-item">
+        <a class="nav-link" href="/#/about" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+          <i class="fas fa-info-circle fa-lg text-center"></i>
+          <div class="menutext mt-2"><router-link class="menutext mt-2" to="/about">About Us</router-link></div>
+        </a>
+      </li>
+      
+      <!-- Notifications -->
+      <li v-if="['Student'].includes(role)" class="nav-item">
+        <a class="nav-link" href="#/studentenroll" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+          <i class="fas fa-bell fa-lg text-center"></i>
+          <div class="menutext mt-2"><router-link class="menutext mt-2" to="/studentenroll">Enroll</router-link></div>
+        </a>
+      </li>
+      
+      
+      <!-- Logout -->
+      <li class="nav-item border-left h-25">
+      <button @click='logout' class="nav-link active d-lg-block" style="display: flex; flex-direction: column; align-items: center; text-align: center; border: none; background: none;">
+          <i class="fas fa-sign-out-alt fa-lg text-center"></i>
+          <div class="menutext">Logout</div>
+      </button>
+      </li>
+
+      
+        </ul>
       </div>
     </div>
   </nav>
