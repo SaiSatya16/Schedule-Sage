@@ -67,3 +67,9 @@ Tired of juggling classes, deadlines, and activities? Schedule Sage empowers you
 
 Email: administration@gmail.com\
 Password: administration
+
+## Ready to Ditch Scheduling Chaos? Click Here!
+
+Click the link below to access your academic scheduling haven:
+
+**Schedule Sage Website**: http://schedule-sage.ap-south-1.elasticbeanstalk.com
