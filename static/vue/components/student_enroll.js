@@ -1,6 +1,7 @@
 const Studentenroll = Vue.component("studentenroll", {
   template: `
-    <div class="container mt-4">
+  <div class="main-container pb-5">
+    <div class="container">
       <div class="row">
         <div class="col-lg-8 offset-lg-2">
           <!-- Search Input -->
