@@ -27,12 +27,11 @@ Tired of juggling classes, deadlines, and activities? Schedule Sage empowers you
 
 ## Functionalities
 
-- **Never Miss a Beat:** **Automated reminders** ensure deadlines don't catch you off guard.
-- **Prioritize Proactively:** **Clear labels** and **important/urgent tags** keep your schedule crystal-clear.
-- **Unified Command Center:** **Seamless Google Calendar sync** centralizes your entire schedule.
-- **Effortless Workflow:** **Break down large tasks** and **avoid information overload** with integrated to-do lists.
-- **Conquer Complexity:** **Intuitive design** makes **deadline tracking a breeze**.
-- **Personalized Freedom:** **Professors:** Set availability easily. **Students:** Choose classes and instructors. **Together:** Craft **personalized schedules for ultimate flexibility**.
+- **Personalized Scheduling:** Craft a **schedule that works for you**, not the other way around.
+  - **Professors:** Set your **availability with ease** and **manage your workload like a boss**.
+  - **Students:** **Choose the classes and instructors** that **spark your academic curiosity** and fit your **unique schedule**.
+
+**Together, professors and students collaborate** through Schedule Sage to create **schedules that optimize learning and minimize conflicts**. It's a win-win for everyone!
 
 ## Architecture and Features
 
