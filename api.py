@@ -173,6 +173,8 @@ update_tasks_parser.add_argument('student_id')
 #==============================Faculty Course API========================================
 
 class FacultyCourseAPI(Resource):
+    @auth_required('token')
+    @any_role_required('Faculty','Student')
     def get(self,name):
         data = []
 
@@ -214,6 +216,8 @@ class FacultyCourseAPI(Resource):
         return data
     
     @marshal_with(course_fields)
+    @auth_required('token')
+    @any_role_required('Faculty')
     def post(self):
         args = create_course_parser.parse_args()
         name = args.get('name', None)
@@ -232,6 +236,8 @@ class FacultyCourseAPI(Resource):
         return course, 201
     
     @marshal_with(course_fields)
+    @auth_required('token')
+    @any_role_required('Faculty')
     def put(self, id):
         args = update_course_parser.parse_args()
         name = args.get('name', None)
@@ -256,6 +262,8 @@ class FacultyCourseAPI(Resource):
         db.session.commit()
         return course, 200
     
+    @auth_required('token')
+    @any_role_required('Faculty')
     def delete(self, id):
         course = Course.query.get(id)
         if not course:
@@ -272,6 +280,8 @@ class FacultyCourseAPI(Resource):
 
 #==============================Student Course API========================================
 class StudentCourseAPI(Resource):
+    @auth_required('token')
+    @any_role_required('Student')
     def get(self,id):
         data = []
         #query all courses order by id in descending order
@@ -295,7 +305,8 @@ class StudentCourseAPI(Resource):
                         "start_time": timetable.start_time,
                         "end_time": timetable.end_time,
                         "course_id": timetable.course_id,
-                        "limit": timetable.limit
+                        "limit": timetable.limit,
+                        "current_count": timetable.current_count,
                     })
             data.append({
                 "id": course.id,
@@ -310,6 +321,8 @@ class StudentCourseAPI(Resource):
 
 #==============================TimeTable API========================================
 class TimeTableAPI(Resource):
+    @auth_required('token')
+    @any_role_required('Faculty','Student')
     def get(self):
         data = []
         #query all timetables order by id in descending order
@@ -332,6 +345,8 @@ class TimeTableAPI(Resource):
         return data
     
     @marshal_with(timetable_fields)
+    @auth_required('token')
+    @any_role_required('Faculty')
     def post(self):
         args = create_timetable_parser.parse_args()
         slot = args.get('slot', None)
@@ -365,6 +380,8 @@ class TimeTableAPI(Resource):
         return timetable, 201
     
     @marshal_with(timetable_fields)
+    @auth_required('token')
+    @any_role_required('Faculty')
     def put(self, id):
         args = update_timetable_parser.parse_args()
         slot = args.get('slot', None)
@@ -398,6 +415,8 @@ class TimeTableAPI(Resource):
         db.session.commit()
         return timetable, 200
     
+    @auth_required('token')
+    @any_role_required('Faculty')
     def delete(self, id):
         timetable = TimeTable.query.get(id)
         if not timetable:
@@ -412,6 +431,8 @@ class TimeTableAPI(Resource):
 
 #==============================Tasks API========================================
 class TasksAPI(Resource):
+    @auth_required('token')
+    @any_role_required('Student')
     def get(self):
         data = []
         #query all tasks order by id in descending order
@@ -434,6 +455,8 @@ class TasksAPI(Resource):
         return data
     
     @marshal_with(tasks_fields)
+    @auth_required('token')
+    @any_role_required('Student')
     def post(self):
         args = create_tasks_parser.parse_args()
         name = args.get('name', None)
@@ -460,6 +483,8 @@ class TasksAPI(Resource):
         return task, 201
     
     @marshal_with(tasks_fields)
+    @auth_required('token')
+    @any_role_required('Student')
     def put(self, id):
         args = update_tasks_parser.parse_args()
         name = args.get('name', None)
@@ -491,6 +516,8 @@ class TasksAPI(Resource):
         db.session.commit()
         return task, 200
     
+    @auth_required('token')
+    @any_role_required('Student')
     def delete(self, id):
         task = Tasks.query.get(id)
         if not task:
@@ -503,6 +530,8 @@ class TasksAPI(Resource):
 
 #==============================User Profile API========================================
 class UserProfileAPI(Resource):
+    @auth_required('token')
+    @any_role_required('Student')
     def get(self, id):
         data = []
         user = User.query.filter_by(id=id).first()
@@ -537,6 +566,8 @@ class UserProfileAPI(Resource):
 
 #==============================Student Time Table API========================================
 class StudentTimeTableAPI(Resource):
+    @auth_required('token')
+    @any_role_required('Student')
     def get(self,id):
         data = []
         #query all student time tables filter by student id order by id in descending order
@@ -561,6 +592,8 @@ class StudentTimeTableAPI(Resource):
         return data
     
     @marshal_with(student_time_table_fields)
+    @auth_required('token')
+    @any_role_required('Student')
     def post(self):
         args = create_timetable_parser.parse_args()
         day = args.get('day', None)
@@ -605,6 +638,8 @@ class StudentTimeTableAPI(Resource):
         return student_time_table, 201
     
     @marshal_with(student_time_table_fields)
+    @auth_required('token')
+    @any_role_required('Student')
     def put(self, id):
         args = update_timetable_parser.parse_args()
         day = args.get('day', None)
@@ -634,6 +669,8 @@ class StudentTimeTableAPI(Resource):
     
 #==============================Clssroom API========================================
 class ClassRoomAPI(Resource):
+    @auth_required('token')
+    @any_role_required('Administration', 'Faculty')
     def get(self):
         data = []
         #query all class rooms order
@@ -651,6 +688,8 @@ class ClassRoomAPI(Resource):
         return data
     
     @marshal_with(ClassRoom_fields)
+    @auth_required('token')
+    @any_role_required('Administration')
     def post(self):
         name = request.json.get('roomname', None)
         description = request.json.get('room_description', None)
@@ -671,6 +710,8 @@ class ClassRoomAPI(Resource):
         return class_room, 201
     
     @marshal_with(ClassRoom_fields)
+    @auth_required('token')
+    @any_role_required('Administration')
     def put(self, id):
         name = request.json.get('roomname', None)
         description = request.json.get('room_description', None)
@@ -688,6 +729,8 @@ class ClassRoomAPI(Resource):
         db.session.commit()
         return class_room, 200
     
+    @auth_required('token')
+    @any_role_required('Administration') 
     def delete(self, id):
         class_room = ClassRoom.query.get(id)
         if not class_room:
@@ -699,6 +742,8 @@ class ClassRoomAPI(Resource):
     
 #==============================ClassRoomSlots API========================================
 class ClassRoomSlotsAPI(Resource):
+    @auth_required('token')
+    @any_role_required('Administration', 'Faculty')
     def get(self):
         data = []
         #query all class room slots order by id in descending order
@@ -719,6 +764,8 @@ class ClassRoomSlotsAPI(Resource):
         return data
     
     @marshal_with(ClassRoomSlots_fields)
+    @auth_required('token')
+    @any_role_required('Administration')
     def post(self):
         day = request.json.get('day', None)
         start_time = request.json.get('start_time', None)
@@ -744,6 +791,8 @@ class ClassRoomSlotsAPI(Resource):
         return class_room_slot, 201
     
     @marshal_with(ClassRoomSlots_fields)
+    @auth_required('token')
+    @any_role_required('Administration')
     def put(self, id):
         day = request.json.get('day', None)
         start_time = request.json.get('start_time', None)
@@ -768,6 +817,9 @@ class ClassRoomSlotsAPI(Resource):
         db.session.commit()
         return class_room_slot, 200
     
+
+    @auth_required('token')
+    @any_role_required('Administration')
     def delete(self, id):
         class_room_slot = ClassRoomSlots.query.get(id)
         if not class_room_slot:
