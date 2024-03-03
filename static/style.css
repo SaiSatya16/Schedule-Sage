@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Bree+Serif&family=Caveat:wght@400;700&family=Lobster&family=Monoton&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display+SC:ital,wght@0,400;0,700;1,700&family=Playfair+Display:ital,wght@0,400;0,700;1,700&family=Roboto:ital,wght@0,400;0,700;1,400;1,700&family=Source+Sans+Pro:ital,wght@0,400;0,700;1,700&family=Work+Sans:ital,wght@0,400;0,700;1,700&display=swap");
+@import url("https://fonts.cdnfonts.com/css/mystical");
 * {
   margin: 0px;
 }
@@ -10,6 +11,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #e3e6e4;
 }
 
 code {
@@ -191,6 +193,7 @@ svg:hover span {
 .main-container {
   background-color: #e3e6e4;
   min-height: 100vh;
+  padding-top: 20px;
 }
 
 .form-container {
@@ -379,6 +382,33 @@ svg:hover span {
   z-index: -1;
 }
 
+.app-logo-img {
+  height: 40px;
+  width: 40px;
+}
+
+.app-logout-img {
+  height: 30px;
+  width: 30px;
+  border-radius: 15px;
+}
+
+.navbar {
+  background-color: #fff;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.nav-item {
+  margin-right: 50px;
+}
+
+.navbar-head {
+  font-size: 25px;
+  font-family: Georgia, serif;
+  padding: 5px;
+}
+
 /*faculty_home.js*/
 .fac-home-container {
   background-color: lightcyan;
@@ -442,6 +472,6 @@ svg:hover span {
   color: #000;
 }
 
-.list-group-item{
+.list-group-item {
   border-radius: 10px;
 }

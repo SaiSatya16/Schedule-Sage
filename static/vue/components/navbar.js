@@ -2,58 +2,55 @@ const Navbar = Vue.component("Navbar", {
   template: `
 
   <nav class="navbar navbar-expand-lg sticky-top border-bottom navbar-container">
-    <div class="container">
-    <a class="navbar-brand" href="/" > SCHEDULE SAGE </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <img src="Scheduling-App\static\mjolnir.png"/>
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <ul class="navbar-nav ms-auto">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <span class="navbar-head">SCHEDULE SAGE</span>
+      <img src="static\\mjolnir.png" class="app-logo-img" />
+    </a>
 
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <ul class="navbar-nav ms-auto">
 
-        <!-- Home -->
-        <li class="nav-item active">
-        <a class="nav-link" href="/#/" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-          <i class="fas fa-home fa-lg text-center" style="color: black"></i>
-          <router-link class="menutext mt-2" to="/">Home</router-link>
-        </a>
-      </li>
-      
-      
-      <!-- About Us -->
-      <li class="nav-item">
-        <a class="nav-link" href="/#/about" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-          <i class="fas fa-info-circle fa-lg text-center"></i>
-          <div class="menutext mt-2"><router-link class="menutext mt-2" to="/about">About Us</router-link></div>
-        </a>
-      </li>
-      
-      <!-- Notifications -->
-      <li v-if="['Student'].includes(role)" class="nav-item">
-        <a class="nav-link" href="#/studentenroll" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-          <i class="fas fa-bell fa-lg text-center"></i>
-          <div class="menutext mt-2"><router-link class="menutext mt-2" to="/studentenroll">Enroll</router-link></div>
-          
-        </a>
-        
-      </li>
-      
-      
-      <!-- Logout -->
-      <li class="nav-item">
-      <a @click='logout' class="nav-link active d-lg-block" style="display: flex; flex-direction: column; align-items: center; text-align: center; border: none; background: none;">
-          <i class="fas fa-sign-out-alt fa-lg text-center"></i>
-          <div class="menutext">Logout</div>
-      </a>
-      </li>
+        <li class="nav-item active mr-3">
+          <a class="nav-link" href="/#/" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+            <i class="fas fa-home fa-lg text-center" style="color: #ffd700"></i>
+            <router-link class="menutext mt-2" to="/">Home</router-link>
+          </a>
+        </li>
 
-      
-        </ul>
-      </div>
+        <li class="nav-item mr-3">
+          <a class="nav-link" href="/#/about" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+            <i class="fas fa-info-circle fa-lg text-center" style="color: #ffd700"></i>
+            <div class="menutext mt-2"><router-link class="menutext mt-2" to="/about">About Us</router-link></div>
+          </a>
+        </li>
+
+        <li v-if="['Student'].includes(role)" class="nav-item mr-3">
+          <a class="nav-link" href="#/studentenroll" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+            <i class="fas fa-bell fa-lg text-center" style="color: #ffd700"></i>
+            <div class="menutext mt-2"><router-link class="menutext mt-2" to="/studentenroll">Enroll</router-link></div>
+
+          </a>
+
+        </li>
+
+        <li class="nav-item logout-thor mr-3">
+          <a @click='logout' class="nav-link active d-lg-block" style="display: flex; flex-direction: column; align-items: center; text-align: center; border: none; background: none;">
+            
+            <img src="static\\logout.jpg" class="app-logout-img"/>
+            <div class="menutext">Logout</div>
+          </a>
+        </li>
+
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav>
+
 
   
   
