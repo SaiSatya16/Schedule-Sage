@@ -344,40 +344,40 @@ class TimeTableAPI(Resource):
 
         return data
     
-    @marshal_with(timetable_fields)
-    @auth_required('token')
-    @any_role_required('Faculty')
-    def post(self):
-        args = create_timetable_parser.parse_args()
-        slot = args.get('slot', None)
-        day = slot.split(" ")[0]
-        start_time = slot.split(" ")[1]
-        end_time = slot.split(" ")[3]
-        course_id = args.get('course_id', None)
-        limit = args.get('limit', None)
-        room = args.get('room', None)
-        current_count = args.get('current_count', None)
+    # @marshal_with(timetable_fields)
+    # @auth_required('token')
+    # @any_role_required('Faculty')
+    # def post(self):
+    #     args = create_timetable_parser.parse_args()
+    #     slot = args.get('slot', None)
+    #     day = slot.split(" ")[0]
+    #     start_time = slot.split(" ")[1]
+    #     end_time = slot.split(" ")[3]
+    #     course_id = args.get('course_id', None)
+    #     limit = args.get('limit', None)
+    #     room = args.get('room', None)
+    #     current_count = args.get('current_count', None)
 
-        check = TimeTable.query.filter_by(day=day, start_time=start_time, end_time=end_time, room=room).first()
-        if check:
-            raise BusinessValidationError(status_code=400,error_code="BE1003",error_message="This slot is already taken. Please choose another slot.")
-        if not day:
-            raise BusinessValidationError(status_code=400,error_code="BE1001",error_message="Day is required")
-        if not start_time:
-            raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Start Time is required")
-        if not end_time:
-            raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="End Time is required")
-        if not course_id:
-            raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Course ID is required")
-        if not limit:
-            raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Limit is required")
-        if not room:
-            raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Room is required")
+    #     check = TimeTable.query.filter_by(day=day, start_time=start_time, end_time=end_time, room=room).first()
+    #     if check:
+    #         raise BusinessValidationError(status_code=400,error_code="BE1003",error_message="This slot is already taken. Please choose another slot.")
+    #     if not day:
+    #         raise BusinessValidationError(status_code=400,error_code="BE1001",error_message="Day is required")
+    #     if not start_time:
+    #         raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Start Time is required")
+    #     if not end_time:
+    #         raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="End Time is required")
+    #     if not course_id:
+    #         raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Course ID is required")
+    #     if not limit:
+    #         raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Limit is required")
+    #     if not room:
+    #         raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Room is required")
         
-        timetable = TimeTable(day=day, start_time=start_time, end_time=end_time, course_id=course_id, limit=limit, room=room, current_count=current_count, slot_name=slot)
-        db.session.add(timetable)
-        db.session.commit()
-        return timetable, 201
+    #     timetable = TimeTable(day=day, start_time=start_time, end_time=end_time, course_id=course_id, limit=limit, room=room, current_count=current_count, slot_name=slot)
+    #     db.session.add(timetable)
+    #     db.session.commit()
+    #     return timetable, 201
     
     @marshal_with(timetable_fields)
     @auth_required('token')

@@ -162,6 +162,33 @@ const Studentenroll = Vue.component("studentenroll", {
       // Return the formatted date with day name
       return `${formattedDate} (${dayName})`;
     },
+
+    setupWebSocket() {
+      var socket = io('http://127.0.0.1:5000/Slots', {
+        path: '/socket.io',
+        // Other configurations...
+      }); // Assuming SocketIO is available as 'io'
+    
+      socket.on('connect', () => {
+        console.log('WebSocket connected');
+      });
+    
+      socket.on('newPostEntry', () => {
+        // Trigger a method to update orders or perform actions on new entries
+        this.getcourses();   
+      });
+    
+      socket.on('disconnect', () => {
+        console.log('WebSocket disconnected');
+      });
+    
+      socket.on('error', error => {
+        console.error('WebSocket error:', error);
+      });
+    },
+
+
+
   },
 
   computed: {
@@ -223,6 +250,7 @@ const Studentenroll = Vue.component("studentenroll", {
 
   mounted() {
     this.getcourses();
+    this.setupWebSocket();
     document.title = "Enroll";
   },
 });

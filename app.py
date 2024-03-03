@@ -16,13 +16,14 @@ from flask_socketio import SocketIO, emit
 
 #==============================configuration===============================
 app = Flask(__name__)
-# socketio = SocketIO(app)
+socketio = SocketIO(app)
 app.config.from_object(DevelopmentConfig)
 api.init_app(app)
 db.init_app(app)
-# CORS(app, resources={r"/socket.io/*": {"origins": "*"}})
+CORS(app, resources={r"/socket.io/*": {"origins": "*"}})
 app.security = Security(app, datastore)
 app.app_context().push()
+
 
 
 @app.route('/')
@@ -96,18 +97,68 @@ def manager_registration():
         db.session.commit()
         return jsonify({"message": "Faculty Created"}), 201
 
+timetable_fields = {
+    'id': fields.Integer,
+    'day': fields.String,
+    'start_time': fields.String,
+    'end_time': fields.String,
+    'course_id': fields.Integer,
+    'limit': fields.Integer,
+    'room': fields.String,
+    'current_count': fields.Integer,
+    'slot_name': fields.String
+}
 
 
-# @socketio.on('connect', namespace='/Posts')
-# def test_connect():
-#     print('Client connected')
+@app.post('/timetable')
+@marshal_with(timetable_fields)
+@auth_required('token')
+@roles_required('Faculty')
+def create_timetable():
+    data = request.get_json()
+    slot = data.get('slot', None)
+    slot = data.get('slot', None)
+    day = slot.split(" ")[0]
+    start_time = slot.split(" ")[1]
+    end_time = slot.split(" ")[3]
+    course_id = data.get('course_id', None)
+    limit = data.get('limit', None)
+    room = data.get('room', None)
+    current_count = data.get('current_count', None)
 
-# @socketio.on('disconnect', namespace='/Posts')
-# def test_disconnect():
-#     print('Client disconnected')
-
-# if __name__ == "__main__":
-#     socketio.run(app, debug=True)
+    check = TimeTable.query.filter_by(day=day, start_time=start_time, end_time=end_time, room=room).first()
+    if check:
+        raise BusinessValidationError(status_code=400,error_code="BE1003",error_message="This slot is already taken. Please choose another slot.")
+    if not day:
+        raise BusinessValidationError(status_code=400,error_code="BE1001",error_message="Day is required")
+    if not start_time:
+        raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Start Time is required")
+    if not end_time:
+        raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="End Time is required")
+    if not course_id:
+        raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Course ID is required")
+    if not limit:
+        raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Limit is required")
+    if not room:
+        raise BusinessValidationError(status_code=400,error_code="BE1002",error_message="Room is required")
     
+    timetable = TimeTable(day=day, start_time=start_time, end_time=end_time, course_id=course_id, limit=limit, room=room, current_count=current_count, slot_name=slot)
+    db.session.add(timetable)
+    db.session.commit()
+    socketio.emit('newPostEntry', namespace='/Slots')
+    return timetable, 201
+
+
+
+@socketio.on('connect', namespace='/Slots')
+def test_connect():
+    print('Client connected')
+
+@socketio.on('disconnect', namespace='/Slots')
+def test_disconnect():
+    print('Client disconnected')
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(app, debug=True)
+    
+
