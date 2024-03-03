@@ -62,7 +62,7 @@ const Administrationhome = Vue.component("administrationhome", {
                         <div v-else>
                             <h2>Classroom Slots</h2>
                             <ul class="list-group">
-                                <li class="list-group-item" v-for="slot in classroomslots" :key="slot.id">
+                                <li class="list-group-item" v-for="slot in upcomingClassroomSlots" :key="slot.id">
                                     <h5>{{ formatScheduleDate(slot.day) }}</h5>
                                     <p class="mb-1">
                                         <i class="fas fa-clock fa-lg text-center" style="font-size: 1.0rem"></i>
@@ -429,6 +429,17 @@ const Administrationhome = Vue.component("administrationhome", {
 
 
 
+        },
+
+        computed: {
+            upcomingClassroomSlots() {
+                const currentDate = new Date();
+                return this.classroomslots.filter(slot => {
+                    const slotDate = new Date(slot.day);
+                    const endTime = new Date(`${slot.day} ${slot.end_time}`);
+                    return slotDate >= currentDate || endTime >= currentDate;
+                });
+            }
         },
 
         mounted() {
