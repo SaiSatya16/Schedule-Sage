@@ -48,3 +48,22 @@ Tired of juggling classes, deadlines, and activities? Schedule Sage empowers you
 **Cloud:** AWS - Scalability for the Future \
 **Version Control:** Git - Streamlined Collaboration \
 **Database:** PostgreSQL - Secure & Reliable Data Fortress
+
+## User Roles
+
+- **Administrator**: Oversees the entire platform, manages user permissions, and ensures smooth operation.
+- **Professor**: Sets their availability, manages course information, and interacts with students.
+- **Student**: Chooses classes and instructors, crafts a personalized schedule, and connects with professors.
+
+## Access and Login
+
+- **Existing Users**: Use your registered email and password to log in.
+
+- **New Users**:
+  _Students_: Register as a student and start browsing available courses.\
+  _Professors_: Register as a professor and submit a request for approval by the administrator. Once approved, you can manage your courses.
+
+- **Admin Login**:
+
+Email: administration@gmail.com\
+Password: administration
