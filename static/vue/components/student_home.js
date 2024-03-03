@@ -4,6 +4,9 @@ const Studenthome = Vue.component("studenthome", {
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 offset-lg-2">
+                <div class="jumbotron pt-3 pb-3">
+                    <h1 class="display-4 greeting">Welcome, {{username}}!</h1>
+                </div>
                     <div class="mt-4">
                     <div class="d-flex flex-row align-items-center">
                         <div>
