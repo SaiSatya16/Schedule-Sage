@@ -17,6 +17,21 @@ const About = Vue.component('about', {
             <strong>Together, with Schedule Sage, you can achieve the freedom and flexibility</strong> you deserve to thrive in your educational endeavors.
           </p>
         </div>
+        <div class="col-md-12 mt-4 ml-3">
+          <p>
+            <strong>Team Members:</strong>
+            <br>
+            - Sai Satya: [jj1039@srmist.edu.in](mailto:jj1039@srmist.edu.in)
+            <br>
+            - Vishnu: [kk4563@srmist.edu.in](mailto:kk4563@srmist.edu.in)
+            <br>
+            - Vinti: [vd3809@srmist.edu.in](mailto:vd3809@srmist.edu.in)
+            <br>
+            - Umar: [ss2197@srmist.edu.in](mailto:ss2197@srmist.edu.in)
+            <br>
+            - Sahiti: [sp9740@srmist.edu.in](mailto:sp9740@srmist.edu.in)
+          </p>
+        </div>
       </div>
     </div>
   `,
@@ -26,4 +41,3 @@ const About = Vue.component('about', {
 });
 
 export default About;
-
