@@ -5,7 +5,6 @@ const Facultyhome = Vue.component("facultyhome", {
     <div class="container">
    <div class="row">
       <div class="col-lg-8 offset-lg-2">
-         <!-- Welcome Message -->
          <div class="jumbotron pt-3 pb-3">
             <h1 class="display-4 greeting">Welcome, {{username}}!</h1>
             <p class="scope">You can Add, delete, edit courses.</p>
@@ -14,6 +13,29 @@ const Facultyhome = Vue.component("facultyhome", {
             <i class="fa fa-plus" aria-hidden="true"></i>
             </button>
          </div>
+         <div class="mt-4">
+            <h2>Today's Schedule</h2>
+            <div v-if="currentDaySchedule.length === 0">
+               <p>No schedule for today.</p>
+            </div>
+            <div v-else>
+               <ul class="list-group">
+                  <li class="rlist-group-item p-3 mb-1" v-for="schedule in currentDaySchedule" :key="schedule.id">
+                     <h5>{{ schedule.course_name }}</h5>
+                     <p>
+                        <i class="fas fa-clock fa-lg text-center" style="font-size: 1.0rem"></i>
+                        {{ schedule.start_time }} 
+                        <span class="mx-1">To</span> 
+                        {{ schedule.end_time }}
+                        <span class="mx-1">|</span>
+                        <i class="fas fa-calendar fa-lg text-center" style="font-size: 1.0rem"></i>
+                        {{ formatScheduleDate(schedule.day) }}
+                     </p>
+                  </li>
+               </ul>
+            </div>
+         </div>
+
          <div class="alert alert-danger" v-if="error">
             {{ error }}
          </div>
@@ -79,28 +101,8 @@ const Facultyhome = Vue.component("facultyhome", {
                </div>
             </div>
          </div>
-         <div class="mt-4">
-            <h2>Today's Schedule</h2>
-            <div v-if="currentDaySchedule.length === 0">
-               <p>No schedule for today.</p>
-            </div>
-            <div v-else>
-               <ul class="list-group">
-                  <li class="rlist-group-item p-3 mb-1" v-for="schedule in currentDaySchedule" :key="schedule.id">
-                     <h5>{{ schedule.course_name }}</h5>
-                     <p>
-                        <i class="fas fa-clock fa-lg text-center" style="font-size: 1.0rem"></i>
-                        {{ schedule.start_time }} 
-                        <span class="mx-1">To</span> 
-                        {{ schedule.end_time }}
-                        <span class="mx-1">|</span>
-                        <i class="fas fa-calendar fa-lg text-center" style="font-size: 1.0rem"></i>
-                        {{ formatScheduleDate(schedule.day) }}
-                     </p>
-                  </li>
-               </ul>
-            </div>
-         </div>
+
+
       </div>
    </div>
    <div v-for="course in courses" :key="course.id">
