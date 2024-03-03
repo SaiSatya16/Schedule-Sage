@@ -26,7 +26,44 @@ const About = Vue.component("about", {
       <p class="card-text"><strong>Together, with Schedule Sage, you can achieve the freedom and flexibility</strong> you deserve to thrive in your educational endeavors.</p>
     </div>
   </div>
-</div>  
+
+  
+
+</div> 
+<div class="card team-members p-3 mt-4">
+  <h1>Dining Philosophers</h1>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>J.Sai Satya</td>
+        <td><a href="mailto:jj1038@srmist.edu.in">jj1038@srmist.edu.in</a></td>
+      </tr>
+      <tr>
+        <td>Sahiti Naidu</td>
+        <td><a href="mailto:sp9740@srmist.edu.in">sp9740@srmist.edu.in</a></td>
+      </tr>
+      <tr>
+        <td>KP.Vishnu Sai</td>
+        <td><a href="mailto:kk4563@srmist.edu.in">kk4563@srmist.edu.in</a></td>
+      </tr>
+      <tr>
+        <td>Vinti Dhadheech</td>
+        <td><a href="mailto:vd3809@srmist.edu.in">vd3809@srmist.edu.in</a></td>
+      </tr>
+      <tr>
+        <td>Syed Mohd Umar Ali Shah</td>
+        <td><a href="mailto:ss2197@srmist.edu.in">ss2197@srmist.edu.in</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
   </div>
   `,
   mounted: function () {
