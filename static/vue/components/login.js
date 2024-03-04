@@ -31,7 +31,7 @@ const Login = Vue.component("login", {
     </div>
     <div class="card p-3 mt-5 mb-5">
     <h2> About the project</h2>
-    <h5> This project is a  sophisticated multi-user web application that allows students to enroll in courses and view their schedules. The application is built using Python, Flask, and SQLite for the backend and Vue.js for the frontend. The application has three roles: Student, Faculty, and Administration. Each role has different permissions and views. The application has a login and registration system. The application also has a REST API for the backend. The application is a simple representation of a course management system. </h5>
+    <h5> This project is a  sophisticated multi-user web application that allows students to enroll in courses and view their schedules. The application is built using Python, Flask, and PostgresSQL for the backend and Vue.js for the frontend. The application has three roles: Student, Faculty, and Administration. Each role has different permissions and views. The application has a login and registration system. The application also has a REST API for the backend. The application is a simple representation of a course management system. </h5>
     <h2>Usage</h2>
     <h5> To use the application, you can register as a student or faculty. After registration, you can log in and view your dashboard. The student can enroll in courses and view their schedules. The faculty can create a new schedule by selecting time slots and classroom given by administration . The administration can add classrooms and class time slots. </h5>
     <h3> Sample Credentials</h3>
