@@ -539,6 +539,15 @@ const Facultyhome = Vue.component("facultyhome", {
       return schedules.sort((a, b) => a.start_time.localeCompare(b.start_time));
     },
 
+    upcomingClassroomSlots() {
+      const currentDate = new Date();
+      return this.classroomslots.filter(slot => {
+          const slotDate = new Date(slot.day);
+          const endTime = new Date(`${slot.day} ${slot.end_time}`);
+          return slotDate >= currentDate || endTime >= currentDate;
+      });
+  }
+
     
 
 
